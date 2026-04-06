@@ -1,0 +1,4 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:11:6:USART1_Config	40	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:71:6:USART1_SendByte	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:83:6:USART1_SendString	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:96:6:USART1_IRQHandler	16	static
