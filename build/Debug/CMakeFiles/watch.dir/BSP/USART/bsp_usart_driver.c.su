@@ -1,0 +1,5 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/USART/bsp_usart_driver.c:26:6:uart_driver_func	48	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/USART/bsp_usart_driver.c:82:21:get_ring_buffer_point	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/USART/bsp_usart_driver.c:92:6:dma_half_irq_callback	64	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/USART/bsp_usart_driver.c:137:6:dma_comp_irq_callback	64	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/USART/bsp_usart_driver.c:182:6:uart_idle_irq_callback	64	static

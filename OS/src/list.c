@@ -220,12 +220,14 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
 
     traceENTER_uxListRemove( pxItemToRemove );
 
+    // 链表删除一个元素的经典操作
     pxItemToRemove->pxNext->pxPrevious = pxItemToRemove->pxPrevious;
     pxItemToRemove->pxPrevious->pxNext = pxItemToRemove->pxNext;
 
     /* Only used during decision coverage testing. */
     mtCOVERAGE_TEST_DELAY();
 
+    // 更新 index 指针，指向合法任务，这里是将 index 指向了当前执行任务的前一个任务
     /* Make sure the index is left pointing to a valid item. */
     if( pxList->pxIndex == pxItemToRemove )
     {
@@ -236,11 +238,14 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
         mtCOVERAGE_TEST_MARKER();
     }
 
+    // 这里只管将任务从列表中删除，所以要将任务的 pxContainer 置为 NULL
     pxItemToRemove->pxContainer = NULL;
+    // 列表任务数量更新，减 1
     ( pxList->uxNumberOfItems ) = ( UBaseType_t ) ( pxList->uxNumberOfItems - 1U );
 
     traceRETURN_uxListRemove( pxList->uxNumberOfItems );
 
+    // 返回的是删除后列表中的任务数量
     return pxList->uxNumberOfItems;
 }
 /*-----------------------------------------------------------*/

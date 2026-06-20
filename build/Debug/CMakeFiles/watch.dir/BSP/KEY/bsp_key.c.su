@@ -1,0 +1,4 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/KEY/bsp_key.c:51:14:key_scan	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/KEY/bsp_key.c:66:14:key_polling_scan_short_long_press	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/KEY/bsp_key.c:128:6:key_task	40	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/KEY/bsp_key.c:245:6:EXTI0_IRQHandler	32	static

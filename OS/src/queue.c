@@ -1101,6 +1101,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue,
         }
         taskEXIT_CRITICAL();
 
+        // 这里退出了临界区，那么可能会被其它任务抢占，意味着在执行下一行函数前经过的时间长度不确定
         /* Interrupts and other tasks can send to and receive from the queue
          * now the critical section has been exited. */
 
@@ -1134,6 +1135,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue,
             }
             else
             {
+                // 这个分支中没有 return，而是恢复任务调度，并回到 for 循环头部，重新一次循环尝试发送数据
                 /* Try again. */
                 prvUnlockQueue( pxQueue );
                 ( void ) xTaskResumeAll();
@@ -1536,7 +1538,7 @@ BaseType_t xQueueReceive( QueueHandle_t xQueue,
                 /* Data available, remove one item. */
                 prvCopyDataFromQueue( pxQueue, pvBuffer );
                 traceQUEUE_RECEIVE( pxQueue );
-                pxQueue->uxMessagesWaiting = ( UBaseType_t ) ( uxMessagesWaiting - ( UBaseType_t ) 1 );
+                pxQueue->uxMessagesWaiting = ( UBaseType_t ) ( uxMessagesWaiting - ( UBaseType_t ) 1 ); // 这里将uxMessagesWaiting减1，就代表最后那个数据移除了
 
                 /* There is now space in the queue, were any tasks waiting to
                  * post to the queue?  If so, unblock the highest priority waiting
@@ -1914,6 +1916,8 @@ BaseType_t xQueuePeek( QueueHandle_t xQueue,
                  * data, not removing it. */
                 pcOriginalReadPosition = pxQueue->u.xQueue.pcReadFrom;
 
+                // 就算仅仅是 peek 一下，数据也会被取出来，只是不会被删除，这样做对于大数据结构会有拷贝成本，带来性能损失，
+                // 但是可以保持和 receive 使用相同的 API 语义，最重要的是可以避免用户拿到队列数据的内部指针，进而导致竞态条件
                 prvCopyDataFromQueue( pxQueue, pvBuffer );
                 traceQUEUE_PEEK( pxQueue );
 

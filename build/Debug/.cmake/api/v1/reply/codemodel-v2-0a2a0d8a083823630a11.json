@@ -62,21 +62,21 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "FreeRTOS_lib::@768a070a0fe75716b479",
-					"jsonFile" : "target-FreeRTOS_lib-Debug-74bbdde8562f1588fd78.json",
+					"jsonFile" : "target-FreeRTOS_lib-Debug-a62e80c7d31016314fd2.json",
 					"name" : "FreeRTOS_lib",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "STM32_StdPeriph::@768a070a0fe75716b479",
-					"jsonFile" : "target-STM32_StdPeriph-Debug-c22c44d86f81c9cf2863.json",
+					"jsonFile" : "target-STM32_StdPeriph-Debug-77e70ff7526fe967864b.json",
 					"name" : "STM32_StdPeriph",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "watch::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-watch-Debug-7b90fffb5e3000cb2b06.json",
+					"jsonFile" : "target-watch-Debug-4ad06cc5ad2cff5a3869.json",
 					"name" : "watch",
 					"projectIndex" : 0
 				}

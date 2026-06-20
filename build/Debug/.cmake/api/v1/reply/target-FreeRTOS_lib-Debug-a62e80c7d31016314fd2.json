@@ -50,19 +50,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 112,
+				"line" : 131,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 114,
+				"line" : 133,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 113,
+				"line" : 132,
 				"parent" : 0
 			}
 		]
@@ -143,7 +143,19 @@
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LCD"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/KEY"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LED"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/ADC"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/USART"
 				}
 			],
 			"language" : "C",

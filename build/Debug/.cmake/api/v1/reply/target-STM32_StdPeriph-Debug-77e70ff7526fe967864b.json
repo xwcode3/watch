@@ -30,6 +30,15 @@
 		},
 		{
 			"path" : "cmake/stm32cubemx/CMakeFiles/STM32_StdPeriph.dir/./__/__/Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.c.obj"
+		},
+		{
+			"path" : "cmake/stm32cubemx/CMakeFiles/STM32_StdPeriph.dir/./__/__/Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c.obj"
+		},
+		{
+			"path" : "cmake/stm32cubemx/CMakeFiles/STM32_StdPeriph.dir/./__/__/Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c.obj"
+		},
+		{
+			"path" : "cmake/stm32cubemx/CMakeFiles/STM32_StdPeriph.dir/./__/__/Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -53,19 +62,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 107,
+				"line" : 126,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 109,
+				"line" : 128,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 108,
+				"line" : 127,
 				"parent" : 0
 			}
 		]
@@ -146,7 +155,19 @@
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LCD"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/KEY"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LED"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/ADC"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/USART"
 				}
 			],
 			"language" : "ASM",
@@ -229,7 +250,19 @@
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LCD"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/KEY"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LED"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/ADC"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/USART"
 				}
 			],
 			"language" : "C",
@@ -251,7 +284,10 @@
 				6,
 				7,
 				8,
-				9
+				9,
+				10,
+				11,
+				12
 			]
 		}
 	],
@@ -283,7 +319,10 @@
 				6,
 				7,
 				8,
-				9
+				9,
+				10,
+				11,
+				12
 			]
 		}
 	],
@@ -347,6 +386,24 @@
 			"backtrace" : 3,
 			"compileGroupIndex" : 1,
 			"path" : "Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.c",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 1,
+			"path" : "Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 1,
+			"path" : "Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 1,
+			"path" : "Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c",
 			"sourceGroupIndex" : 1
 		}
 	],

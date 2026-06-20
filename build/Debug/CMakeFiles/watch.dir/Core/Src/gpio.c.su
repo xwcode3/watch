@@ -1,0 +1,3 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/gpio.c:7:6:gpio_init	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/gpio.c:20:6:led_init	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/gpio.c:37:6:Key_Init	32	static

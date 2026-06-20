@@ -32,6 +32,9 @@
 /* Exported functions ------------------------------------------------------- */
 void TimingDelay_Decrement(void);
 void FreeRTOS_Started(void);
+void SystemClock_Config(void);
+// 获取当前系统时钟频率
+void get_clock_info(void);
 
 #endif /* __MAIN_H */
 

@@ -1,8 +1,8 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1629:22:NVIC_SetPriority	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1760:26:SysTick_Config	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:58:5:main	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:100:6:easylogger_config	8	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:114:5:__io_putchar	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:126:6:Delay	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:138:6:TimingDelay_Decrement	4	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:152:6:FreeRTOS_Started	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:63:5:main	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:120:6:easylogger_config	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:134:5:__io_putchar	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:146:6:Delay	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:158:6:TimingDelay_Decrement	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:172:6:FreeRTOS_Started	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:179:6:SystemClock_Config	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/main.c:213:6:get_clock_info	24	static

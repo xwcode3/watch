@@ -31,7 +31,11 @@ set(MX_Include_Dirs
 
 	# BSP
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER
-	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART
 )
 
 # STM32CubeMX generated application sources
@@ -50,10 +54,20 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/syscalls.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/sysmem.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/usart.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/gpio.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/timer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/FreeRTOS_tasks.c
 
 	# BSP
-	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD/bsp_lcd_driver.c
+	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
+	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD/bsp_lcd_driver.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY/bsp_key.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC/bsp_adc.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/bsp_usart_driver.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/mid_circular_buffer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/usart_parse.c
+
 )
 
 # STM32 Standard Peripheral Drivers (replacing HAL drivers)
@@ -70,6 +84,9 @@ set(STD_PERIPH_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c
 )
 
 # FreeRTOS source files
@@ -83,6 +100,8 @@ set(FreeRTOS_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../OS/src/stream_buffer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../OS/src/tasks.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../OS/src/timers.c
+
+
 )
 
 # Drivers Midllewares

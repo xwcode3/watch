@@ -22,7 +22,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "main.h"
+
 
 /** @addtogroup Template_Project
   * @{
@@ -135,16 +138,24 @@ void DebugMon_Handler(void)
 void SysTick_Handler(void)
 {
   extern void xPortSysTickHandler(void);
-  extern volatile uint8_t g_freertos_started;
+  // extern volatile uint8_t g_freertos_started;
+  //extern BaseType_t xTaskGetSchedulerState(void);
   
   /* 在 FreeRTOS tick 处理之前调用延时递减 */
   TimingDelay_Decrement();
-  
-  /* 只有在 FreeRTOS 启动后才调用其处理函数 */
-  if(g_freertos_started)
+
+  // 如果调度器已经启动
+  if(xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) // 检查调度器状态
   {
+    // 调用 FreeRTOS 内部的滴答处理函数
     xPortSysTickHandler();
   }
+  
+  /* 只有在 FreeRTOS 启动后才调用其处理函数 */
+  // if(g_freertos_started)
+  // {
+    // xPortSysTickHandler();
+  // }
 }
 
 /******************************************************************************/

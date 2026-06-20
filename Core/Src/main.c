@@ -28,7 +28,12 @@
 
 #include "SEGGER_RTT.h"
 #include "elog.h"
+
 #include "usart.h"
+#include "FreeRTOS_tasks.h"
+#include "gpio.h"
+
+#include "bsp_adc.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -42,7 +47,7 @@ static __IO uint32_t uwTimingDelay;
 RCC_ClocksTypeDef RCC_Clocks;
 
 /* FreeRTOS 是否已启动的标志 */
-volatile uint8_t g_freertos_started = 0;
+// volatile uint8_t g_freertos_started = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 static void Delay(__IO uint32_t nTime);
@@ -64,23 +69,39 @@ int main(void)
        refer to system_stm32f4xx.c file */
 
   /* SysTick end of count event each 10ms */
-  RCC_GetClocksFreq(&RCC_Clocks);
-  SysTick_Config(RCC_Clocks.HCLK_Frequency / 100);
+  // RCC_GetClocksFreq(&RCC_Clocks);
+  // SysTick_Config(RCC_Clocks.HCLK_Frequency / 100);
+  SystemClock_Config();
+  gpio_init();
 
+  // 这里是因为 easylogger 初始化以及一些 printf、log_i 函数调用输出需要串口
   USART1_Config();
+
+  get_clock_info();
 
   easylogger_config();
 
+  // bsp_adc_init();
+
   /* Add your application code here */
-  /* Insert 50 ms delay */
-  // Delay(5);
-  // vTaskDelay(50);
+  app_task_create();
+
+  // g_freertos_started = 1;
+
+
+  vTaskStartScheduler();
 
   /* Infinite loop */
-  while (1)
+  for (;;)
   {
-    // b = 1;
     SEGGER_RTT_printf(0, "OI hello, world!\r\n");
+
+    // LED 闪烁测试
+    GPIO_ResetBits(GPIOC, GPIO_Pin_13);  // 点亮
+    Delay(50);
+    GPIO_SetBits(GPIOC, GPIO_Pin_13);    // 熄灭
+    Delay(50);
+
     Delay(50);
     log_i("easy logger test");
     log_e("error test");
@@ -151,7 +172,53 @@ void TimingDelay_Decrement(void)
   */
 void FreeRTOS_Started(void)
 {
-  g_freertos_started = 1;
+  // g_freertos_started = 1;
+}
+
+
+// 配置使用外部高速时钟 HSE 作为时钟源
+void SystemClock_Config(void) {
+  ErrorStatus HSEStartUpStatus;
+  RCC_DeInit();	// 复位 RCC 时钟配置为默认值
+
+  RCC_HSEConfig(RCC_HSE_ON);	// 使能 HSE
+  HSEStartUpStatus = RCC_WaitForHSEStartUp();	// 等待 HSE 启动
+
+  if (HSEStartUpStatus == SUCCESS) {
+    // 配置 PLL
+    RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
+    // 使能 PLL
+    RCC_PLLCmd(ENABLE);
+
+    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET) {
+      // 等待 PLL 启动
+    }
+
+    // 配置系统时钟
+    RCC_HCLKConfig(RCC_SYSCLK_Div1);
+    // 配置 APB1 和 APB2 时钟
+    RCC_PCLK1Config(RCC_HCLK_Div2);
+    RCC_PCLK2Config(RCC_HCLK_Div1);
+    // 设置系统时钟
+    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
+    // 等待系统时钟切换到 PLL
+    while (RCC_GetSYSCLKSource() != 0x08) {}
+  } else {
+    while (1) {}
+    // 配置失败，死循环
+  }
+}
+
+// 获取当前系统时钟频率
+void get_clock_info(void) {
+  RCC_ClocksTypeDef RccClocks;
+  RCC_GetClocksFreq(&RccClocks);
+
+  printf("SYSCLK Frequency: %lu Hz\r\n", RccClocks.SYSCLK_Frequency);
+  printf("HCLK Frequency: %lu Hz\r\n", RccClocks.HCLK_Frequency);
+  printf("PCLK1 Frequency: %lu Hz\r\n", RccClocks.PCLK1_Frequency);
+  printf("PCLK2 Frequency: %lu Hz\r\n", RccClocks.PCLK2_Frequency);
 }
 
 #ifdef  USE_FULL_ASSERT

@@ -3812,6 +3812,7 @@ void vTaskSuspendAll( void )
 {
     traceENTER_vTaskSuspendAll();
 
+    // 说明这里是单核 mcu
     #if ( configNUMBER_OF_CORES == 1 )
     {
         /* A critical section is not required as the variable is of type
@@ -8446,6 +8447,7 @@ static void prvAddCurrentTaskToDelayedList( TickType_t xTicksToWait,
     {
         if( ( xTicksToWait == portMAX_DELAY ) && ( xCanBlockIndefinitely != pdFALSE ) )
         {
+            // 这里是无限期延时，逻辑是把任务直接加入到挂起任务列表中，挂起任务列表中的任务不会被调度
             /* Add the task to the suspended task list instead of a delayed task
              * list to ensure it is not woken by a timing event.  It will block
              * indefinitely. */
@@ -8453,16 +8455,19 @@ static void prvAddCurrentTaskToDelayedList( TickType_t xTicksToWait,
         }
         else
         {
+            // 这个 case 是有期限的延时，逻辑是把任务加入到延时列表中，延时列表中的任务会被调度
             /* Calculate the time at which the task should be woken if the event
              * does not occur.  This may overflow but this doesn't matter, the
              * kernel will manage it correctly. */
             xTimeToWake = xConstTickCount + xTicksToWait;
 
+            // 更新延时列表中的xItemValue（在延时列表中这个变量表示下一次需要唤醒任务的时间节点）
             /* The list item will be inserted in wake time order. */
             listSET_LIST_ITEM_VALUE( &( pxCurrentTCB->xStateListItem ), xTimeToWake );
 
             if( xTimeToWake < xConstTickCount )
             {
+                // 这个 case 是延时溢出的情况，需要将该任务加入到延时溢出列表中
                 /* Wake time has overflowed.  Place this item in the overflow
                  * list. */
                 traceMOVED_TASK_TO_OVERFLOW_DELAYED_LIST();
