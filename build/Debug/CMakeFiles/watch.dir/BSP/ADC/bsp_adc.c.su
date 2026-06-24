@@ -1,5 +1,5 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/ADC/bsp_adc.c:8:6:DMA_Configuration	72	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/ADC/bsp_adc.c:40:8:adc_buffer_init	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/ADC/bsp_adc.c:55:6:bsp_adc_init	72	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/ADC/bsp_adc.c:152:6:bsp_adc_change_dma_mem_addr	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/ADC/bsp_adc.c:177:6:ADC_DMA_Restart	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/ADC/bsp_adc.c:8:6:DMA_Configuration	72	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/ADC/bsp_adc.c:40:8:adc_buffer_init	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/ADC/bsp_adc.c:55:6:bsp_adc_init	72	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/ADC/bsp_adc.c:152:6:bsp_adc_change_dma_mem_addr	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/ADC/bsp_adc.c:177:6:ADC_DMA_Restart	24	static

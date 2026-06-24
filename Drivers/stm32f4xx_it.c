@@ -138,8 +138,6 @@ void DebugMon_Handler(void)
 void SysTick_Handler(void)
 {
   extern void xPortSysTickHandler(void);
-  // extern volatile uint8_t g_freertos_started;
-  //extern BaseType_t xTaskGetSchedulerState(void);
   
   /* 在 FreeRTOS tick 处理之前调用延时递减 */
   TimingDelay_Decrement();
@@ -150,12 +148,6 @@ void SysTick_Handler(void)
     // 调用 FreeRTOS 内部的滴答处理函数
     xPortSysTickHandler();
   }
-  
-  /* 只有在 FreeRTOS 启动后才调用其处理函数 */
-  // if(g_freertos_started)
-  // {
-    // xPortSysTickHandler();
-  // }
 }
 
 /******************************************************************************/

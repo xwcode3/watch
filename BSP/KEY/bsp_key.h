@@ -1,6 +1,16 @@
 #ifndef __BSP_KEY_H__
 #define __BSP_KEY_H__
 
+#include "stm32f4xx.h"
+
+#include <stdint.h>
+#include <stdio.h>
+
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+
 #define SHORT_PRESS_TIME   (500)    // Specify the short press time
 
 extern TaskHandle_t key_TaskHandle;
@@ -57,6 +67,15 @@ key_status_t key_scan(key_press_status_t * key_value);
 key_status_t key_polling_scan_short_long_press(key_press_status_t * key_value,
                                                uint32_t short_press_time);
 
-uint8_t Key_Scan(void);
+
+/**
+ * @brief Get the key status
+ *
+ * @param none
+ *
+ * @return 1 : key is pressed
+ * @return 0 : key is not pressed
+ */
+uint8_t key_scan_bootloader(void);
 
 #endif  // end of __BSP_KEY_H__

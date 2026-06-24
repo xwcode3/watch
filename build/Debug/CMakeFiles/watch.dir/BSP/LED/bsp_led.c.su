@@ -1,7 +1,7 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:32:13:led_on	8	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:37:13:led_off	8	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:42:13:led_toggle	8	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:52:14:led_control	24	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:96:17:get_led_status	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:113:6:led_task	32	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/BSP/LED/bsp_led.c:149:14:led_off_on_irq	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:32:13:led_on	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:37:13:led_off	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:42:13:led_toggle	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:52:14:led_control	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:96:17:get_led_status	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:113:6:led_task	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/BSP/LED/bsp_led.c:149:14:led_off_on_irq	8	static

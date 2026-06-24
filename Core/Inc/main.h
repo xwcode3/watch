@@ -24,17 +24,78 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
+#include <stdio.h>
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "SEGGER_RTT.h"
+#include "elog.h"
+
+#include "usart.h"
+#include "FreeRTOS_tasks.h"
+#include "gpio.h"
+
+#include "bsp_adc.h"
 
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+/**
+ * @brief Disable all peripherals and interrupts
+ */
+void disable_peripherals(void);
+
+/**
+ * @brief Disable all peripherals and interrupts and jump to APP
+ */
+void JumpToApp(void);
+
+/**
+  * @brief  Decrements the TimingDelay variable.
+  * @param  None
+  * @retval None
+  */
 void TimingDelay_Decrement(void);
-void FreeRTOS_Started(void);
+
+/**
+  * @brief  System Clock Configuration
+  *         The system Clock is configured as follow :
+  *            System Clock source            = PLL (HSE)
+  *            SYSCLK(Hz)                     = 100000000
+  *            HCLK(Hz)                       = 100000000
+  */
 void SystemClock_Config(void);
+
+
 // 获取当前系统时钟频率
+/**
+ * @brief Get clock info
+ */
 void get_clock_info(void);
+
+/**
+  * @brief  EasyLogger 配置
+  * @note
+  * @retval None
+  */
+void easylogger_config(void);
+
+/**
+ * @brief 重定向 printf 到 USART1
+ * @note 这样就能直接使用 printf 函数了
+ */
+int __io_putchar(int ch);
+
+/**
+  * @brief  Inserts a delay time.
+  * @param  nTime: specifies the delay time length, in milliseconds.
+  * @retval None
+  */
+void Delay(__IO uint32_t nTime);
 
 #endif /* __MAIN_H */
 

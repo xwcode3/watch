@@ -9,8 +9,8 @@ void gpio_init() {
     // 这与 FreeRTOS 的配置兼容
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     
-    // led_init();  // 启用 LED 初始化
-    // Key_Init();
+    led_init();  // 启用 LED 初始化
+    key_init();
     // timer_2_init();
     // timer_5_init();
 }
@@ -34,7 +34,7 @@ void led_init(void) {
     GPIO_ResetBits(GPIOC, GPIO_Pin_13);
 }
 
-void Key_Init(void) {
+void key_init(void) {
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
     GPIO_InitTypeDef GPIO_Key_InitStructure;

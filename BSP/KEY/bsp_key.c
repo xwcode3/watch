@@ -25,14 +25,7 @@
  * 
  *****************************************************************************/
 
-#include "stm32f4xx.h"
 
-#include <stdint.h>
-#include <stdio.h>
-
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
 #include "bsp_key.h"
 
 
@@ -311,4 +304,25 @@ void EXTI0_IRQHandler() {
         // 清除中断标志位
         // EXTI_ClearITPendingBit(EXTI_Line0);
     }
+}
+
+uint8_t key_scan_bootloader(void)
+{
+    // Bit_SET: 1, Bit_RESET: 0
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET)
+    {
+        // Delay ti avoid bouncing
+        for (volatile int i = 0; i < 100000; i++) {}
+
+        if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET)
+        {
+            // Wait for key release
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET) {}
+
+            return 1;   // Key pressed
+        }
+    }
+
+    // Key not pressed
+    return 0;
 }

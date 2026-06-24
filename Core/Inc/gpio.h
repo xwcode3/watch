@@ -10,12 +10,7 @@
 
 void gpio_init(void);
 void led_init(void);
-void led_on(void);
-void led_off(void);
-uint8_t get_led_status(void);
-void led_toggle(void);
-void Key_Init(void);
-// void timer_init(void);
+void key_init(void);
 
 
 #endif //WATCH_GPIO_H

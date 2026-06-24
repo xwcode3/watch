@@ -1,5 +1,5 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug --preset Debug -S /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu -B /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug --preset Debug -S /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader -B /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug
 Build type: Debug
 -- Configuring done (0.0s)
 -- Generating done (0.0s)
--- Build files have been written to: /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug
+-- Build files have been written to: /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug

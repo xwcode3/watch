@@ -1,7 +1,7 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/CMakeFiles/watch.dir
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/CMakeFiles/edit_cache.dir
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/CMakeFiles/rebuild_cache.dir
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_StdPeriph.dir
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/cmake/stm32cubemx/CMakeFiles/FreeRTOS_lib.dir
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/CMakeFiles/watch.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/CMakeFiles/edit_cache.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/CMakeFiles/rebuild_cache.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_StdPeriph.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/cmake/stm32cubemx/CMakeFiles/FreeRTOS_lib.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

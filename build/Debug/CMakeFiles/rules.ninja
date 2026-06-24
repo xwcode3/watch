@@ -72,7 +72,7 @@ rule C_COMPILER__FreeRTOS_lib_unscanned_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake --regenerate-during-build -S/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu -B/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug
+  command = /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake --regenerate-during-build -S/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader -B/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/build/Debug
   description = Re-running CMake...
   generator = 1
 

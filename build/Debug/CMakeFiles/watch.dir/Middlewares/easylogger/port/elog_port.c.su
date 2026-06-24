@@ -1,7 +1,7 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:38:13:elog_port_init	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:52:6:elog_port_output	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:62:6:elog_port_output_lock	4	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:70:6:elog_port_output_unlock	4	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:81:13:elog_port_get_time	4	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:92:13:elog_port_get_p_info	4	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Middlewares/easylogger/port/elog_port.c:103:13:elog_port_get_t_info	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:38:13:elog_port_init	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:52:6:elog_port_output	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:62:6:elog_port_output_lock	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:70:6:elog_port_output_unlock	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:81:13:elog_port_get_time	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:92:13:elog_port_get_p_info	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_bootloader/Middlewares/easylogger/port/elog_port.c:103:13:elog_port_get_t_info	4	static

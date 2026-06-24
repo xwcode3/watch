@@ -19,42 +19,25 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
-
-#include <stdio.h>
-
-#include "FreeRTOS.h"
-#include "task.h"
-
-#include "SEGGER_RTT.h"
-#include "elog.h"
-
-#include "usart.h"
-#include "FreeRTOS_tasks.h"
-#include "gpio.h"
-
-#include "bsp_adc.h"
-
-/** @addtogroup Template_Project
-  * @{
-  */ 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
+#define APP_FLASH_ADDR 0x8019000    // APP 的起始烧录地址
+
 static __IO uint32_t uwTimingDelay;
 RCC_ClocksTypeDef RCC_Clocks;
 
-/* FreeRTOS 是否已启动的标志 */
-// volatile uint8_t g_freertos_started = 0;
-
 /* Private function prototypes -----------------------------------------------*/
-static void Delay(__IO uint32_t nTime);
-void easylogger_config(void);
+
+typedef void (*pFunction) (void);   // 声明函数指针
+static pFunction JumpToAppLocation;
 
 /* Private functions ---------------------------------------------------------*/
-
 /**
   * @brief  Main program
   * @param  None
@@ -67,10 +50,7 @@ int main(void)
        files before to branch to application main.
        To reconfigure the default setting of SystemInit() function, 
        refer to system_stm32f4xx.c file */
-
-  /* SysTick end of count event each 10ms */
-  // RCC_GetClocksFreq(&RCC_Clocks);
-  // SysTick_Config(RCC_Clocks.HCLK_Frequency / 100);
+  // RCC_ClockSecuritySystemCmd(ENABLE);
   SystemClock_Config();
   gpio_init();
 
@@ -79,45 +59,72 @@ int main(void)
 
   get_clock_info();
 
-  easylogger_config();
+  JumpToApp();
+
+  // easylogger_config();
 
   // bsp_adc_init();
 
   /* Add your application code here */
-  app_task_create();
+  // app_task_create();
 
-  // g_freertos_started = 1;
-
-
-  vTaskStartScheduler();
+  // vTaskStartScheduler();
 
   /* Infinite loop */
   for (;;)
   {
-    SEGGER_RTT_printf(0, "OI hello, world!\r\n");
 
-    // LED 闪烁测试
-    GPIO_ResetBits(GPIOC, GPIO_Pin_13);  // 点亮
-    Delay(50);
-    GPIO_SetBits(GPIOC, GPIO_Pin_13);    // 熄灭
-    Delay(50);
-
-    Delay(50);
-    log_i("easy logger test");
-    log_e("error test");
-    Delay(50);
-    printf("printf test\r\n");
-    Delay(50);
   }
 
 }
 
 
-/**
-  * @brief  EasyLogger 配置
-  * @note
-  * @retval None
-  */
+void disable_peripherals(void)
+{
+  // 关闭 USART1 在 NVIC 中的中断使能
+  NVIC_DisableIRQ(USART1_IRQn);
+  // 轮询等待发送完成标志（TC）被置位
+  while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+  {
+
+  }
+  // 禁用 USART1
+  USART_Cmd(USART1, DISABLE);
+
+  RCC_RTCCLKCmd(DISABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, DISABLE);
+  __disable_irq();
+}
+
+void JumpToApp(void)
+{
+  uint32_t jumpAddr;
+  Delay(2000);
+
+  printf("bootloader running...\r\n");
+
+  Delay(1000);
+
+
+  printf("delay 1s end\r\n");
+  uint32_t app_msp = *(__IO uint32_t*)APP_FLASH_ADDR;
+  printf("APP MSP Value: 0x%08X\r\n", app_msp);
+
+  printf("Disable all peripherals and interrupts, jump to APP\r\n");
+  disable_peripherals();
+
+  if (((*(__IO uint32_t*)APP_FLASH_ADDR) & 0x2FFE0000) == 0x20020000)
+  {
+    jumpAddr = *(__IO uint32_t*)(APP_FLASH_ADDR + 4);
+
+    JumpToAppLocation = (pFunction)jumpAddr;
+
+    __set_MSP(*(__IO uint32_t*)APP_FLASH_ADDR);
+
+    JumpToAppLocation();
+  }
+}
+
 void easylogger_config(void) {
   elog_init();
   elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_DIR | ELOG_FMT_FUNC | ELOG_FMT_LINE);
@@ -127,11 +134,6 @@ void easylogger_config(void) {
   elog_start();
 }
 
-
-/**
- * @brief 重定向 printf 到 USART1
- * @note 这样就能直接使用 printf 函数了
- */
 int __io_putchar(int ch)
 {
     USART1_SendByte((uint8_t)ch);  // 将printf函数重定向输出到串口
@@ -139,11 +141,6 @@ int __io_putchar(int ch)
     return ch;
 }
 
-/**
-  * @brief  Inserts a delay time.
-  * @param  nTime: specifies the delay time length, in milliseconds.
-  * @retval None
-  */
 void Delay(__IO uint32_t nTime)
 { 
   uwTimingDelay = nTime;
@@ -151,11 +148,7 @@ void Delay(__IO uint32_t nTime)
   while(uwTimingDelay != 0);
 }
 
-/**
-  * @brief  Decrements the TimingDelay variable.
-  * @param  None
-  * @retval None
-  */
+
 void TimingDelay_Decrement(void)
 {
   if (uwTimingDelay != 0x00)
@@ -164,49 +157,74 @@ void TimingDelay_Decrement(void)
   }
 }
 
-/**
-  * @brief  标记 FreeRTOS 已启动
-  * @note   在 vTaskStartScheduler() 之前调用
-  * @param  None
-  * @retval None
-  */
-void FreeRTOS_Started(void)
-{
-  // g_freertos_started = 1;
+
+void SystemClock_Config(void) {
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); // 使能 PWR 时钟
+
+  PWR->CR |= PWR_CR_VOS; // 设置电压调节器输出电压范围 1 (1.2V)
+
+  while (PWR_GetFlagStatus(PWR_FLAG_VOSRDY) == RESET);
+
+  /* 使能HSE并等待稳定 */
+  RCC_HSEConfig(RCC_HSE_ON);
+  while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET);
+
+  RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
+
+  RCC_PLLCmd(ENABLE);
+  while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+
+  FLASH_PrefetchBufferCmd(ENABLE);
+  FLASH_InstructionCacheCmd(ENABLE);
+  FLASH_DataCacheCmd(ENABLE);
+  FLASH_SetLatency(FLASH_Latency_3);
+
+  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+  RCC_HCLKConfig(RCC_SYSCLK_Div1);
+  RCC_PCLK1Config(RCC_HCLK_Div2);
+  RCC_PCLK2Config(RCC_HCLK_Div1);
+
+  SystemCoreClockUpdate();
+  SysTick_Config((SystemCoreClock / 1000));  // 1ms
 }
 
-
 // 配置使用外部高速时钟 HSE 作为时钟源
-void SystemClock_Config(void) {
+void SystemClock_Config2(void) {
   ErrorStatus HSEStartUpStatus;
-  RCC_DeInit();	// 复位 RCC 时钟配置为默认值
 
-  RCC_HSEConfig(RCC_HSE_ON);	// 使能 HSE
-  HSEStartUpStatus = RCC_WaitForHSEStartUp();	// 等待 HSE 启动
+  // 1. 复位 RCC 时钟配置为默认值
+  RCC_DeInit();
 
-  if (HSEStartUpStatus == SUCCESS) {
-    // 配置 PLL
+  // 2. 开启 PWR 时钟并配置电压调节器（跑 100MHz 必须开启 Scale1）
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+  PWR_MainRegulatorModeConfig(PWR_Regulator_Voltage_Scale1);
+
+  // 3. 配置 Flash 等待周期为 3 个时钟周期（100MHz 必须配 3WS）
+  FLASH_SetLatency(FLASH_Latency_3);
+
+  // 4. 使能 HSE 并等待启动
+  RCC_HSEConfig(RCC_HSE_ON);
+  HSEStartUpStatus = RCC_WaitForHSEStartUp();
+
+  if (HSEStartUpStatus == SUCCESS)
+  {
+    // 5. 配置 PLL：HSE(25MHz) / 12 = 2.083MHz -> * 96 = 200MHz -> / 2 = 100MHz
     RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
-    // 使能 PLL
+
+    // 6. 使能 PLL 并等待锁定
     RCC_PLLCmd(ENABLE);
+    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET) {}
 
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET) {
-      // 等待 PLL 启动
-    }
+    // 7. 配置 AHB/APB 总线分频器
+    RCC_HCLKConfig(RCC_SYSCLK_Div1);      // AHB = 100MHz
+    RCC_PCLK1Config(RCC_HCLK_Div2);       // APB1 = 50MHz (最高限制50MHz)
+    RCC_PCLK2Config(RCC_HCLK_Div1);       // APB2 = 100MHz
 
-    // 配置系统时钟
-    RCC_HCLKConfig(RCC_SYSCLK_Div1);
-    // 配置 APB1 和 APB2 时钟
-    RCC_PCLK1Config(RCC_HCLK_Div2);
-    RCC_PCLK2Config(RCC_HCLK_Div1);
-    // 设置系统时钟
+    // 8. 切换系统时钟源到 PLL
     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+    while (RCC_GetSYSCLKSource() != 0x08) {} // 等待 PLL 成为系统时钟
 
-    // 等待系统时钟切换到 PLL
-    while (RCC_GetSYSCLKSource() != 0x08) {}
-  } else {
-    while (1) {}
-    // 配置失败，死循环
+    SysTick_Config(100000); // 1ms，开启SysTick中断
   }
 }
 
@@ -219,6 +237,8 @@ void get_clock_info(void) {
   printf("HCLK Frequency: %lu Hz\r\n", RccClocks.HCLK_Frequency);
   printf("PCLK1 Frequency: %lu Hz\r\n", RccClocks.PCLK1_Frequency);
   printf("PCLK2 Frequency: %lu Hz\r\n", RccClocks.PCLK2_Frequency);
+
+  printf("system core clock = %lu Hz\r\n", SystemCoreClock);
 }
 
 #ifdef  USE_FULL_ASSERT
