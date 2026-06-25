@@ -24,7 +24,19 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
+#include <stdio.h>
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "SEGGER_RTT.h"
+#include "elog.h"
+
+#include "usart.h"
+#include "FreeRTOS_tasks.h"
+#include "gpio.h"
+
+#include "bsp_adc.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

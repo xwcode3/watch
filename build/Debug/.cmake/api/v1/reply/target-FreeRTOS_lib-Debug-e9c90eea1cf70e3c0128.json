@@ -50,19 +50,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 131,
+				"line" : 133,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 133,
+				"line" : 135,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 132,
+				"line" : 134,
 				"parent" : 0
 			}
 		]
@@ -95,67 +95,67 @@
 			[
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Core/Inc"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Core/Inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Drivers"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Drivers"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Drivers/STM32F4xx_StdPeriph_Driver/Inc"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Drivers/STM32F4xx_StdPeriph_Driver/Inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Drivers/CMSIS"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Drivers/CMSIS"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../OS"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../OS"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../OS/include"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../OS/include"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../OS/port"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../OS/port"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Middlewares/RTT"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Middlewares/RTT"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Middlewares/easylogger/inc"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Middlewares/easylogger/inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Middlewares/easylogger/plugins/file"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Middlewares/easylogger/plugins/file"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../Middlewares/easylogger/plugins/flash"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../Middlewares/easylogger/plugins/flash"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/SPEAKER"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../BSP/SPEAKER"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/KEY"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../BSP/KEY"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/LED"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../BSP/LED"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/ADC"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../BSP/ADC"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/stm32cubemx/../../BSP/USART"
+					"path" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/stm32cubemx/../../BSP/USART"
 				}
 			],
 			"language" : "C",

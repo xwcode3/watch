@@ -1,6 +1,6 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:32:6:UART_RegisterRxEventCallback	24	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:42:6:USART1_DMA2_Stream2_Init	104	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:132:6:DMA2_Stream2_IRQHandler	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:162:6:USART1_SendByte	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:174:6:USART1_Config	40	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/usart.c:231:6:USART1_IRQHandler	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/usart.c:32:6:UART_RegisterRxEventCallback	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/usart.c:42:6:USART1_DMA2_Stream2_Init	104	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/usart.c:132:6:DMA2_Stream2_IRQHandler	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/usart.c:162:6:USART1_SendByte	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/usart.c:174:6:USART1_Config	40	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/usart.c:231:6:USART1_IRQHandler	32	static

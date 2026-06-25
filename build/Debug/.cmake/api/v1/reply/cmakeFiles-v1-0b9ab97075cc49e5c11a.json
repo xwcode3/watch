@@ -160,8 +160,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug",
-		"source" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu"
+		"build" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug",
+		"source" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app"
 	},
 	"version" : 
 	{

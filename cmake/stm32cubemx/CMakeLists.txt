@@ -6,6 +6,7 @@ set(MX_Defines_Syms
 	# Removed USE_HAL_DRIVER, added USE_STDPERIPH_DRIVER
 	USE_STDPERIPH_DRIVER
 	STM32F411xE
+	# USE_HSE_BYPASS
     $<$<CONFIG:Debug>:DEBUG>
 )
 
@@ -87,6 +88,7 @@ set(STD_PERIPH_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_pwr.c
 )
 
 # FreeRTOS source files

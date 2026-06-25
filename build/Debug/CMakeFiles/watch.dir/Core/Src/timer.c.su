@@ -1,5 +1,5 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/timer.c:11:6:delay_us	24	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/timer.c:21:6:delay_ms	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/timer.c:32:6:timer_2_init	24	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/timer.c:66:6:timer_5_init	24	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/Core/Src/timer.c:93:6:TIM5_IRQHandler	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/timer.c:11:6:delay_us	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/timer.c:21:6:delay_ms	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/timer.c:32:6:timer_2_init	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/timer.c:66:6:timer_5_init	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/Core/Src/timer.c:93:6:TIM5_IRQHandler	8	static

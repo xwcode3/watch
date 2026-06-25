@@ -179,7 +179,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug"
+			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -635,7 +635,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/CMakeFiles/pkgRedirects"
+			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -695,7 +695,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu"
+			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1199,7 +1199,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/cmake/gcc-arm-none-eabi.cmake"
+			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/cmake/gcc-arm-none-eabi.cmake"
 		},
 		{
 			"name" : "CMAKE_UNAME",
@@ -1239,7 +1239,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug"
+			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug"
 		},
 		{
 			"name" : "watch_IS_TOP_LEVEL",
@@ -1263,7 +1263,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu"
+			"value" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app"
 		}
 	],
 	"kind" : "cache",

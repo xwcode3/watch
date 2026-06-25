@@ -62,21 +62,21 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "FreeRTOS_lib::@768a070a0fe75716b479",
-					"jsonFile" : "target-FreeRTOS_lib-Debug-a62e80c7d31016314fd2.json",
+					"jsonFile" : "target-FreeRTOS_lib-Debug-e9c90eea1cf70e3c0128.json",
 					"name" : "FreeRTOS_lib",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "STM32_StdPeriph::@768a070a0fe75716b479",
-					"jsonFile" : "target-STM32_StdPeriph-Debug-77e70ff7526fe967864b.json",
+					"jsonFile" : "target-STM32_StdPeriph-Debug-7be23e75a66b7cd2508e.json",
 					"name" : "STM32_StdPeriph",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "watch::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-watch-Debug-4ad06cc5ad2cff5a3869.json",
+					"jsonFile" : "target-watch-Debug-6f8dcd5e7130c0e186c0.json",
 					"name" : "watch",
 					"projectIndex" : 0
 				}
@@ -86,8 +86,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug",
-		"source" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu"
+		"build" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug",
+		"source" : "/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app"
 	},
 	"version" : 
 	{

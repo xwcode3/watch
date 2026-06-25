@@ -6,7 +6,7 @@
     </debugger>
     <gdbserver exe="/Applications/SEGGER/JLink_V836/JLinkGDBServerCLExe" />
     <console enabled="false" port="2334" />
-    <target device="STM32F411CE" reset-before="false" />
+    <target device="STM32F411CE" reset-command="monitor reset 1" reset-before="false" frequency="2000" />
     <connection port="4444" warmup-ms="500" />
     <swo />
   </jlink-debug-target>

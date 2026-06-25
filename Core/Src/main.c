@@ -21,20 +21,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-#include <stdio.h>
-
-#include "FreeRTOS.h"
-#include "task.h"
-
-#include "SEGGER_RTT.h"
-#include "elog.h"
-
-#include "usart.h"
-#include "FreeRTOS_tasks.h"
-#include "gpio.h"
-
-#include "bsp_adc.h"
-
 /** @addtogroup Template_Project
   * @{
   */ 
@@ -55,6 +41,14 @@ void easylogger_config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
+void app_pre(void)
+{
+  SCB->VTOR = FLASH_BASE | 0x19000;
+
+  __enable_irq();   //  全局中断使能
+}
+
+
 /**
   * @brief  Main program
   * @param  None
@@ -67,10 +61,8 @@ int main(void)
        files before to branch to application main.
        To reconfigure the default setting of SystemInit() function, 
        refer to system_stm32f4xx.c file */
+  app_pre();
 
-  /* SysTick end of count event each 10ms */
-  // RCC_GetClocksFreq(&RCC_Clocks);
-  // SysTick_Config(RCC_Clocks.HCLK_Frequency / 100);
   SystemClock_Config();
   gpio_init();
 
@@ -86,28 +78,14 @@ int main(void)
   /* Add your application code here */
   app_task_create();
 
-  // g_freertos_started = 1;
-
-
   vTaskStartScheduler();
 
   /* Infinite loop */
   for (;;)
   {
-    SEGGER_RTT_printf(0, "OI hello, world!\r\n");
-
-    // LED 闪烁测试
-    GPIO_ResetBits(GPIOC, GPIO_Pin_13);  // 点亮
-    Delay(50);
-    GPIO_SetBits(GPIOC, GPIO_Pin_13);    // 熄灭
-    Delay(50);
-
-    Delay(50);
-    log_i("easy logger test");
-    log_e("error test");
-    Delay(50);
+    Delay(500);
     printf("printf test\r\n");
-    Delay(50);
+    Delay(500);
   }
 
 }
@@ -146,7 +124,7 @@ int __io_putchar(int ch)
   */
 void Delay(__IO uint32_t nTime)
 { 
-  uwTimingDelay = nTime;
+  uwTimingDelay = nTime * 1000;
 
   while(uwTimingDelay != 0);
 }
@@ -164,54 +142,45 @@ void TimingDelay_Decrement(void)
   }
 }
 
-/**
-  * @brief  标记 FreeRTOS 已启动
-  * @note   在 vTaskStartScheduler() 之前调用
-  * @param  None
-  * @retval None
-  */
-void FreeRTOS_Started(void)
-{
-  // g_freertos_started = 1;
-}
-
 
 // 配置使用外部高速时钟 HSE 作为时钟源
-void SystemClock_Config(void) {
-  ErrorStatus HSEStartUpStatus;
-  RCC_DeInit();	// 复位 RCC 时钟配置为默认值
+void SystemClock_Config(void)
+{
+  // 1. 复位 RCC 时钟配置为默认值
+  // RCC_DeInit();
 
-  RCC_HSEConfig(RCC_HSE_ON);	// 使能 HSE
-  HSEStartUpStatus = RCC_WaitForHSEStartUp();	// 等待 HSE 启动
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); // 使能 PWR 时钟
 
-  if (HSEStartUpStatus == SUCCESS) {
-    // 配置 PLL
-    RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
-    // 使能 PLL
-    RCC_PLLCmd(ENABLE);
+  PWR->CR |= PWR_CR_VOS; // 设置电压调节器输出电压范围 1 (1.2V)
 
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET) {
-      // 等待 PLL 启动
-    }
+  while (PWR_GetFlagStatus(PWR_FLAG_VOSRDY) == RESET);
 
-    // 配置系统时钟
-    RCC_HCLKConfig(RCC_SYSCLK_Div1);
-    // 配置 APB1 和 APB2 时钟
-    RCC_PCLK1Config(RCC_HCLK_Div2);
-    RCC_PCLK2Config(RCC_HCLK_Div1);
-    // 设置系统时钟
-    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+  /* 使能HSE并等待稳定 */
+  RCC_HSEConfig(RCC_HSE_ON);
+  while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET);
 
-    // 等待系统时钟切换到 PLL
-    while (RCC_GetSYSCLKSource() != 0x08) {}
-  } else {
-    while (1) {}
-    // 配置失败，死循环
-  }
+  RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
+
+  RCC_PLLCmd(ENABLE);
+  while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+
+  FLASH_PrefetchBufferCmd(ENABLE);
+  FLASH_InstructionCacheCmd(ENABLE);
+  FLASH_DataCacheCmd(ENABLE);
+  FLASH_SetLatency(FLASH_Latency_3);
+
+  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+  RCC_HCLKConfig(RCC_SYSCLK_Div1);
+  RCC_PCLK1Config(RCC_HCLK_Div2);
+  RCC_PCLK2Config(RCC_HCLK_Div1);
+
+  SystemCoreClockUpdate();
+  SysTick_Config((SystemCoreClock / 1000));  // 1ms
 }
 
-// 获取当前系统时钟频率
-void get_clock_info(void) {
+  // 获取当前系统时钟频率
+void get_clock_info(void)
+{
   RCC_ClocksTypeDef RccClocks;
   RCC_GetClocksFreq(&RccClocks);
 
@@ -219,6 +188,8 @@ void get_clock_info(void) {
   printf("HCLK Frequency: %lu Hz\r\n", RccClocks.HCLK_Frequency);
   printf("PCLK1 Frequency: %lu Hz\r\n", RccClocks.PCLK1_Frequency);
   printf("PCLK2 Frequency: %lu Hz\r\n", RccClocks.PCLK2_Frequency);
+
+  printf("APP System Core Clock = %lu Hz\r\n", SystemCoreClock);
 }
 
 #ifdef  USE_FULL_ASSERT

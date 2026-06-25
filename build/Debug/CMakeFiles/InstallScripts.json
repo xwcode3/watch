@@ -1,8 +1,8 @@
 {
 	"InstallScripts" : 
 	[
-		"/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/cmake_install.cmake",
-		"/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
+		"/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug/cmake_install.cmake",
+		"/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_xiaowu_app/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
 	],
 	"Parallel" : false
 }
