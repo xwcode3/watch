@@ -9,8 +9,8 @@ void gpio_init() {
     // 这与 FreeRTOS 的配置兼容
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     
-    led_init();  // 启用 LED 初始化
-    key_init();
+    // led_init();  // 启用 LED 初始化
+    // key_init();
     // timer_2_init();
     // timer_5_init();
 }

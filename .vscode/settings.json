@@ -1,0 +1,12 @@
+{
+    "cmake.configureOnEdit": true,
+    "cmake.buildBeforeRun": true,
+    "cmake.generator": "Ninja",
+    "cmake.kitsFile": "${workspaceFolder}/.vscode/cmake-kits.json",
+    "cortex-debug.armToolchainPath": "/opt/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin",
+    "cortex-debug.openocdPath": "/opt/homebrew/bin/openocd",
+    "cortex-debug.JLinkGDBServerPath": "/usr/local/bin/JLinkGDBServer",
+    "files.associations": {
+        "*.s": "asm"
+    }
+}

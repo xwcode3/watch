@@ -35,8 +35,11 @@
 #include "usart.h"
 #include "FreeRTOS_tasks.h"
 #include "gpio.h"
+#include "spi.h"
 
-#include "bsp_adc.h"
+// #include "bsp_adc.h"
+#include "bsp_led.h"
+#include "bsp_key.h"
 
 
 /* Exported types ------------------------------------------------------------*/
@@ -44,15 +47,13 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
-/**
- * @brief Disable all peripherals and interrupts
- */
-void disable_peripherals(void);
 
 /**
- * @brief Disable all peripherals and interrupts and jump to APP
- */
-void JumpToApp(void);
+  * @brief  Pre initialization
+  * @param  None
+  * @retval None
+  */
+void app_pre(void);
 
 /**
   * @brief  Decrements the TimingDelay variable.
@@ -98,4 +99,5 @@ int __io_putchar(int ch);
 void Delay(__IO uint32_t nTime);
 
 #endif /* __MAIN_H */
+
 

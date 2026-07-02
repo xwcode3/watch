@@ -1,0 +1,10 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:21:13:W25Qx_Reset	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:36:9:W25Qx_Init	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:51:16:W25Qx_GetStatus	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:80:9:W25Qx_WriteEnable	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:116:6:W25Qx_Read_ID	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:139:9:W25Qx_Get_Parameter	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:169:9:W25Qx_Read	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:200:9:W25Qx_Write	48	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:277:9:W25Qx_Erase_Block	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/BSP/W25Q64/bsp_w25qxx.c:315:9:W25Qx_Erase_Chip	16	static

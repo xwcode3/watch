@@ -1,0 +1,9 @@
+[
+    {
+        "name": "GCC ARM Embedded",
+        "toolchainFile": "${workspaceFolder}/cmake/gcc-arm-none-eabi.cmake",
+        "preferredGenerator": {
+            "name": "Ninja"
+        }
+    }
+]

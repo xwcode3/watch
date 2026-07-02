@@ -23,11 +23,15 @@ set(MX_Include_Dirs
     ${CMAKE_CURRENT_SOURCE_DIR}/../../OS/port
 
 	# Middlewares
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES
+
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/RTT
 
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/plugins/file
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/plugins/flash
+
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem
 
 	# BSP
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER
@@ -36,12 +40,18 @@ set(MX_Include_Dirs
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64
 )
 
 # STM32CubeMX generated application sources
 set(MX_Application_Src
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES/AES.c
+	
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/RTT/SEGGER_RTT.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/RTT/SEGGER_RTT_printf.c
+
+    # ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem/ymodem.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem/common.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/src/elog.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/src/elog_utils.c
@@ -57,6 +67,9 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/gpio.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/timer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/FreeRTOS_tasks.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/spi.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/flash.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/boot_manager.c
 
 	# BSP
 	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
@@ -67,7 +80,8 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/bsp_usart_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/mid_circular_buffer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/usart_parse.c
-
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx_handler.c
 )
 
 # STM32 Standard Peripheral Drivers (replacing HAL drivers)
@@ -88,6 +102,7 @@ set(STD_PERIPH_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_pwr.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c
 )
 
 # FreeRTOS source files

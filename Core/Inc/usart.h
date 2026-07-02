@@ -64,13 +64,20 @@ void USART1_SendByte(uint8_t data);
  */
 void USART1_Config(void);
 
-#if 0
-// 函数声明
-void USART1_Config(void);           // 串口配置函数
-void USART1_SendByte(uint8_t data); // 发送单个字节
-void USART1_SendString(char* str);  // 发送字符串
-void USART1_IRQHandler(void);       // 中断处理函数
-#endif
+/**
+  * @brief  串口发送字节函数，使用USART2或USART1，使用阻塞方式
+  * @param  USARTx USART2, USART1
+  * @param  data 数据字节
+  * @retval None
+  */
+void USART_SendChar(USART_TypeDef* USARTx, uint8_t data);
+
+/**
+  * @brief  串口接收字节函数，使用USART2或USART1，使用阻塞方式
+  * @param  USARTx USART2, USART1
+  * @retval 返回数据
+  */
+uint8_t USART_ReceiveChar(USART_TypeDef* USARTx);
 
 
 #endif //WATCH_USART_H

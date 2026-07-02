@@ -26,6 +26,8 @@
 #include "task.h"
 #include "main.h"
 
+// Overflow time : 49 days， 用于 Bootloader 指示 ticks
+volatile uint32_t SysTickUpTime = 0;
 
 /** @addtogroup Template_Project
   * @{

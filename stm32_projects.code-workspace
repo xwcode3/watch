@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "name": "bootloader",
+            "path": "."
+        },
+        {
+            "name": "app",
+            "path": "../app"
+        }
+    ],
+    "settings": {
+        "cmake.useCMakePresets": "always",
+        "cmake.configureOnEdit": true
+    }
+}

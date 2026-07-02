@@ -1,0 +1,6 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/flash.c:31:17:STMFLASH_GetFlashSector	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/flash.c:58:9:flash_erase	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/flash.c:80:6:flash_unlock	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/flash.c:85:6:flash_lock	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/flash.c:97:14:erease_app_sector	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/flash.c:108:6:flash_write	24	static

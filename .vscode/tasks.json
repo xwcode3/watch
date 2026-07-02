@@ -1,0 +1,74 @@
+{
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "/opt/ST/STM32CubeCLT_1.21.0/CMake/bin/cmake --build --preset Debug",
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Build watch.elf using CMake + Ninja"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: arm-none-eabi-gcc \u751f\u6210\u6d3b\u52a8\u6587\u4ef6",
+            "command": "/opt/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "\u8c03\u8bd5\u5668\u751f\u6210\u7684\u4efb\u52a1\u3002"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: arm-none-eabi-gcc \u751f\u6210\u6d3b\u52a8\u6587\u4ef6",
+            "command": "/opt/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "\u7f16\u8bd1\u5668: /opt/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc"
+        },
+        {
+            "label": "flash",
+            "type": "shell",
+            "command": "cd \"${workspaceFolder}\" && ./flash.sh",
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Flash watch.elf to STM32F411CEU6 via J-Link"
+        },
+        {
+            "label": "erase",
+            "type": "shell",
+            "command": "cd \"${workspaceFolder}\" && ./erase.sh",
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Full chip erase of STM32F411CEU6 via J-Link"
+        }
+    ],
+    "version": "2.0.0"
+}

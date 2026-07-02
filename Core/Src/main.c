@@ -27,15 +27,10 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-#define APP_FLASH_ADDR 0x8019000    // APP 的起始烧录地址
-
 static __IO uint32_t uwTimingDelay;
 RCC_ClocksTypeDef RCC_Clocks;
 
 /* Private function prototypes -----------------------------------------------*/
-
-typedef void (*pFunction) (void);   // 声明函数指针
-static pFunction JumpToAppLocation;
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -45,85 +40,41 @@ static pFunction JumpToAppLocation;
   */
 int main(void)
 {
- /*!< At this stage the microcontroller clock setting is already configured, 
-       this is done through SystemInit() function which is called from startup
-       files before to branch to application main.
-       To reconfigure the default setting of SystemInit() function, 
-       refer to system_stm32f4xx.c file */
-  // RCC_ClockSecuritySystemCmd(ENABLE);
+  app_pre();
+
   SystemClock_Config();
   gpio_init();
+
 
   // 这里是因为 easylogger 初始化以及一些 printf、log_i 函数调用输出需要串口
   USART1_Config();
 
   get_clock_info();
 
-  JumpToApp();
-
-  // easylogger_config();
+  easylogger_config();
 
   // bsp_adc_init();
 
   /* Add your application code here */
-  // app_task_create();
+  app_task_create();
 
-  // vTaskStartScheduler();
+  vTaskStartScheduler();
 
   /* Infinite loop */
   for (;;)
   {
-
+    printf("FreeRTOS Scheduler exited unexpectedly!\r\n");
   }
 
 }
 
-
-void disable_peripherals(void)
+void app_pre(void)
 {
-  // 关闭 USART1 在 NVIC 中的中断使能
-  NVIC_DisableIRQ(USART1_IRQn);
-  // 轮询等待发送完成标志（TC）被置位
-  while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
-  {
+  SCB->VTOR = FLASH_BASE | 0x19000;
 
-  }
-  // 禁用 USART1
-  USART_Cmd(USART1, DISABLE);
-
-  RCC_RTCCLKCmd(DISABLE);
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, DISABLE);
-  __disable_irq();
+  __enable_irq();   //  全局中断使能
 }
 
-void JumpToApp(void)
-{
-  uint32_t jumpAddr;
-  Delay(2000);
-
-  printf("bootloader running...\r\n");
-
-  Delay(1000);
-
-
-  printf("delay 1s end\r\n");
-  uint32_t app_msp = *(__IO uint32_t*)APP_FLASH_ADDR;
-  printf("APP MSP Value: 0x%08X\r\n", app_msp);
-
-  printf("Disable all peripherals and interrupts, jump to APP\r\n");
-  disable_peripherals();
-
-  if (((*(__IO uint32_t*)APP_FLASH_ADDR) & 0x2FFE0000) == 0x20020000)
-  {
-    jumpAddr = *(__IO uint32_t*)(APP_FLASH_ADDR + 4);
-
-    JumpToAppLocation = (pFunction)jumpAddr;
-
-    __set_MSP(*(__IO uint32_t*)APP_FLASH_ADDR);
-
-    JumpToAppLocation();
-  }
-}
 
 void easylogger_config(void) {
   elog_init();
@@ -238,7 +189,7 @@ void get_clock_info(void) {
   printf("PCLK1 Frequency: %lu Hz\r\n", RccClocks.PCLK1_Frequency);
   printf("PCLK2 Frequency: %lu Hz\r\n", RccClocks.PCLK2_Frequency);
 
-  printf("system core clock = %lu Hz\r\n", SystemCoreClock);
+  printf("APP system core clock = %lu Hz\r\n", SystemCoreClock);
 }
 
 #ifdef  USE_FULL_ASSERT
