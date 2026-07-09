@@ -134,7 +134,7 @@ void W25Qx_Read_ID(uint16_t *ID)
 /**
   * @brief  Get W25QX Parameter.
   * @param  Para: W25Qx_Parameter
-  * @retval NULL
+  * @retval W25Qx_OK or W25Qx_ERROR
   */
 uint8_t W25Qx_Get_Parameter(W25Qx_Parameter *Para)
 {

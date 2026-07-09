@@ -1,3 +1,0 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/boot_manager.c:11:6:JumpToApp1	24	static,ignoring_inline_asm
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/boot_manager.c:88:8:back_to_app	64	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/Core/Src/boot_manager.c:146:8:copy_app_to_executable	80	static

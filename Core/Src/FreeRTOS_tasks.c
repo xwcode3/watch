@@ -209,29 +209,21 @@ void usart_dma_init()
 
 void app_task_create(void)
 {
-#if 0
-    BaseType_t task_create_ret = pdFAIL;
-    task_create_ret = xTaskCreate(key_task, "key_task", 256, NULL, 4, &key_TaskHandle);
-    if (task_create_ret != pdPASS) {
-        printf("key_task create failed\r\n");
-    }
-
-    task_create_ret = xTaskCreate(led_task, "led_task", 128, NULL, 2, &led_TaskHandle);
-    if (task_create_ret != pdPASS)
-    {
-        printf("led_task create failed\r\n");
-    }
-
-    task_create_ret = xTaskCreate(key_led_handle_task, "led_key",
-            128, NULL, 3, &key_led_task_handle);
-    if (task_create_ret != pdPASS)
-    {
-        printf("key_led_handle_task create failed\r\n");
-    }
-#endif
-
-
     // adc_and_dma_init();
+
+    BaseType_t task_create_ret = pdFAIL;
+    task_create_ret = xTaskCreate(led_blink_task, "led_blink_task", 128, NULL, 1, &led_TaskHandle);
+    if (task_create_ret != pdPASS)
+    {
+        printf("led_blink_task create failed\r\n");
+    }
+
+    // extern TaskHandle_t ota_task_handle;
+    // task_create_ret = xTaskCreate(ota_task, "ota_task", 256, NULL, 2, &ota_task_handle);
+    // if (task_create_ret != pdPASS)
+    // {
+    //     printf("ota_task create failed\r\n");
+    // }
 
     usart_dma_init();
 

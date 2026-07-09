@@ -36,10 +36,14 @@
 #include "FreeRTOS_tasks.h"
 #include "gpio.h"
 #include "spi.h"
+#include "iic.h"
 
 // #include "bsp_adc.h"
 #include "bsp_led.h"
 #include "bsp_key.h"
+#include "bsp_AT24Cxx_Driver.h"
+#include "bsp_w25qxx.h"
+#include "bsp_w25qxx_handler.h"
 
 
 /* Exported types ------------------------------------------------------------*/

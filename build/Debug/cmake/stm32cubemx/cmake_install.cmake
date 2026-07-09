@@ -1,4 +1,4 @@
-# Install script for directory: /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_app/cmake/stm32cubemx
+# Install script for directory: /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/cmake/stm32cubemx
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

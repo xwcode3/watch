@@ -40,7 +40,11 @@ set(MX_Include_Dirs
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AT24Cxx
+
+	#APP
+	${CMAKE_CURRENT_SOURCE_DIR}/../../APP/OTA
 )
 
 # STM32CubeMX generated application sources
@@ -70,6 +74,7 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/spi.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/flash.c
 	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/boot_manager.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/iic.c
 
 	# BSP
 	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
@@ -80,8 +85,12 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/bsp_usart_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/mid_circular_buffer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/usart_parse.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx_handler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx_handler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AT24Cxx/bsp_AT24Cxx_Driver.c
+
+	# APP
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../APP/OTA/ota.c
 )
 
 # STM32 Standard Peripheral Drivers (replacing HAL drivers)

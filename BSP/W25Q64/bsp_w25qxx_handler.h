@@ -22,7 +22,7 @@ typedef struct {
     uint8_t read_sector_index;
 } st_w25q_handler;
 
-void W25Q64_Init(void);
+uint8_t W25Q64_Init(void);
 uint8_t W25Q64_EraseChip(void);
 uint8_t W25Q64_WriteData(uint8_t *data, uint32_t length);
 uint8_t W25Q64_WriteData_End(void);

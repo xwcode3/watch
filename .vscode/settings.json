@@ -8,5 +8,18 @@
     "cortex-debug.JLinkGDBServerPath": "/usr/local/bin/JLinkGDBServer",
     "files.associations": {
         "*.s": "asm"
-    }
+    },
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/Debug/compile_commands.json",
+    "C_Cpp.default.intelliSenseMode": "gcc-arm",
+    "C_Cpp.default.browse.path": [
+        "${workspaceFolder}"
+    ],
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/Core/Inc",
+        "${workspaceFolder}/Drivers/**",
+        "${workspaceFolder}/APP",
+        "${workspaceFolder}/BSP",
+        "${workspaceFolder}/Middlewares/**",
+        "${workspaceFolder}/System"
+    ]
 }

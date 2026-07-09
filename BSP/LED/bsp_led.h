@@ -66,5 +66,12 @@ led_operation_t get_led_status(void);
 // // 切换LED状态
 // static void led_toggle(void);
 
+/**
+ * @brief  led blink task
+ * @param  pvParameters: task parameters (unused)
+ * @retval void
+ */
+void led_blink_task(void *pvParameters);
+
 
 #endif // __BSP_LED_H__

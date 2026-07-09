@@ -53,10 +53,18 @@ int main(void)
 
   easylogger_config();
 
-  // bsp_adc_init();
+  if (1 == ee_CheckOk()) {
+    printf("EEPROM is OK!\r\n");
+  }
+
+  spi1_init();
+  if (1 == W25Q64_Init()) {
+    printf("W25Qxx is OK!\r\n");
+  }
 
   /* Add your application code here */
   app_task_create();
+  
 
   vTaskStartScheduler();
 

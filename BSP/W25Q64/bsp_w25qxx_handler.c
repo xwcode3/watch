@@ -4,16 +4,21 @@ static st_w25q_handler s_st_W25Q_Handler_1;
 
 /**
  * @brief Initialize the chip's flash area and the handler structure.
- * @return None
+ * @return 1 on success, 0 on failure
  */
-void W25Q64_Init(void) {
-	W25Qx_Init();
+uint8_t W25Q64_Init(void) {
+	if (W25Qx_Init() != W25Qx_OK) {
+		// Handle initialization error
+		return 0;
+	}
 
 	s_st_W25Q_Handler_1.read_index = 0;
 	s_st_W25Q_Handler_1.read_sector_index = 0;
 	s_st_W25Q_Handler_1.write_databuf_index = 0;
 	s_st_W25Q_Handler_1.write_index = 0;
 	s_st_W25Q_Handler_1.write_sector_index = 0;
+	
+	return 1;
 }
 
 
