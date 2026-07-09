@@ -252,6 +252,34 @@ void USART1_IRQHandler(void) {
 }
 
 
+/**
+  * @brief  串口发送字节函数，使用USART2或USART1，使用阻塞方式
+  * @param  USARTx USART2, USART1
+  * @param  data 数据字节
+  * @retval None
+  */
+void USART_SendChar(USART_TypeDef* USARTx, uint8_t data)
+{
+    // 等待发送数据寄存器为空
+    while(USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
+    USART_SendData(USARTx, data);
+}
+
+
+/**
+  * @brief  串口接收字节函数，使用USART2或USART1，使用阻塞方式
+  * @param  USARTx USART2, USART1
+  * @retval 返回数据
+  */
+uint8_t USART_ReceiveChar(USART_TypeDef* USARTx) {
+    // 等待接收数据寄存器满
+    while (USART_GetFlagStatus(USARTx, USART_FLAG_RXNE) == RESET);
+    // 读取接收到的数据，这里读取的数据是16位的，但我们只需要低8位，所以直接返回即可
+    return USART_ReceiveData(USARTx);
+}
+
+
+
 #if 0
 
 // USART1接收数据中断服务程序

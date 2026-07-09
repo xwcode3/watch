@@ -26,6 +26,8 @@
 #include "task.h"
 #include "main.h"
 
+// Overflow time : 49 days， 用于 Bootloader 指示 ticks
+volatile uint32_t SysTickUpTime = 0;
 
 /** @addtogroup Template_Project
   * @{
@@ -141,6 +143,8 @@ void SysTick_Handler(void)
   
   /* 在 FreeRTOS tick 处理之前调用延时递减 */
   TimingDelay_Decrement();
+
+  SysTickUpTime++;  // 该变量溢出时间：49天，用于 Bootloader 指示 ticks
 
   // 如果调度器已经启动
   if(xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) // 检查调度器状态

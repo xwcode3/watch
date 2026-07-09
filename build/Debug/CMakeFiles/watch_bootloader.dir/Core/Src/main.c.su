@@ -1,0 +1,14 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1559:22:NVIC_DisableIRQ	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1629:22:NVIC_SetPriority	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1760:26:SysTick_Config	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:48:5:main	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:112:6:bootloader_led_blink	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:122:6:disable_peripherals	16	static,ignoring_inline_asm
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:180:6:JumpToApp	24	static,ignoring_inline_asm
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:209:6:easylogger_config	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:218:5:__io_putchar	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:225:6:Delay	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:233:6:TimingDelay_Decrement	4	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:242:6:SystemClock_Config	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:273:6:SystemClock_Config2	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/main.c:313:6:get_clock_info	24	static

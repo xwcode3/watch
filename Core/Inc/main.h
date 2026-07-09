@@ -31,18 +31,31 @@
 
 #include "SEGGER_RTT.h"
 #include "elog.h"
+#include "ymodem.h"
 
 #include "usart.h"
 #include "FreeRTOS_tasks.h"
 #include "gpio.h"
+#include "spi.h"
+#include "boot_manager.h"
 
-#include "bsp_adc.h"
+// #include "bsp_adc.h"
+#include "bsp_led.h"
+#include "bsp_key.h"
+#include "bsp_w25qxx.h"
 
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+
+/**
+ * @brief Blink the led
+ */
+void bootloader_led_blink(void);
+
 
 /**
  * @brief Disable all peripherals and interrupts
@@ -98,4 +111,5 @@ int __io_putchar(int ch);
 void Delay(__IO uint32_t nTime);
 
 #endif /* __MAIN_H */
+
 

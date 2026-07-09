@@ -32,6 +32,8 @@
 static __IO uint32_t uwTimingDelay;
 RCC_ClocksTypeDef RCC_Clocks;
 
+uint8_t au8_test[1024];
+
 /* Private function prototypes -----------------------------------------------*/
 
 typedef void (*pFunction) (void);   // 声明函数指针
@@ -54,10 +56,39 @@ int main(void)
   SystemClock_Config();
   gpio_init();
 
+
   // 这里是因为 easylogger 初始化以及一些 printf、log_i 函数调用输出需要串口
   USART1_Config();
 
   get_clock_info();
+
+  bootloader_led_blink(); // 闪烁 10 次，进行提示 Bootloader 正在运行
+
+
+  spi1_init();  // 初始化 SPI1
+  // 初始化 W25Q64 FLASH
+  if (W25Qx_Init() == 0) {
+    printf("W25Qx_Init ok\r\n");
+  }
+
+  uint32_t file_size = 0;
+  if (1 == key_scan_bootloader()) {
+    printf("key pressed, receive new APP bin file\r\n");
+
+    file_size = Ymodem_Receive(au8_test);
+    printf("receive new APP bin file done, file size = %d bytes\r\n", file_size);
+
+    if (0 == copy_app_to_executable(file_size)) {
+      printf("bootloader jump to APP\r\n");
+      JumpToApp();
+    } else {
+      printf("copy app to executable area failed\r\n");
+      while (1) {}
+    }
+  } else {
+    printf("key not pressed, jump to APP\r\n");
+    JumpToApp();
+  }
 
   JumpToApp();
 
@@ -78,23 +109,73 @@ int main(void)
 
 }
 
-
-void disable_peripherals(void)
+void bootloader_led_blink(void)
 {
-  // 关闭 USART1 在 NVIC 中的中断使能
-  NVIC_DisableIRQ(USART1_IRQn);
-  // 轮询等待发送完成标志（TC）被置位
-  while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+  for (int i = 0; i < 10; i++)
   {
-
+    led_control(LED_TOGGLE);
+    Delay(100);
   }
-  // 禁用 USART1
-  USART_Cmd(USART1, DISABLE);
+}
 
+
+void disable_peripherals(void) {
+  /* ========== 1. 关 USART1 ========== */
+  NVIC_DisableIRQ(USART1_IRQn);
+  while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET) { }
+  USART_Cmd(USART1, DISABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, DISABLE);
+
+  /* ========== 2. 关 SPI1 ========== */
+  SPI_Cmd(SPI1, DISABLE);
+  NVIC_DisableIRQ(SPI1_IRQn);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE);
+
+  // /* ========== 3. 关 ADC + DMA ========== */
+  // ADC_Cmd(ADC1, DISABLE);
+  // NVIC_DisableIRQ(ADC_IRQn);
+
+  // DMA_Cmd(DMA2_Stream0, DISABLE);
+  // NVIC_DisableIRQ(DMA2_Stream0_IRQn);
+  // RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, DISABLE);
+
+  // /* ========== 4. 关 Timer ========== */
+  // TIM_Cmd(TIM2, DISABLE);
+  // NVIC_DisableIRQ(TIM2_IRQn);
+  // RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, DISABLE);
+
+  // TIM_Cmd(TIM3, DISABLE);
+  // NVIC_DisableIRQ(TIM3_IRQn);
+  // RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, DISABLE);
+
+  /* ========== 5. 关 KEY (PA0 + EXTI0) ========== */
+  // 先清 EXTI 屏蔽位，防止关时钟后 EXTI 仍然挂起
+  EXTI->IMR &= ~EXTI_Line0;
+  EXTI->PR  =  EXTI_Line0;    // 写 1 清除 pending
+  NVIC_DisableIRQ(EXTI0_IRQn);
+  // GPIOA 引脚恢复默认态
+  GPIO_InitTypeDef gpio;
+  GPIO_StructInit(&gpio);
+  gpio.GPIO_Pin   = GPIO_Pin_0;
+  gpio.GPIO_Mode  = GPIO_Mode_AN;   // 模拟模式，最省电最安全
+  GPIO_Init(GPIOA, &gpio);
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);
+
+  /* ========== 6. 关 LED (PC13) ========== */
+  GPIO_StructInit(&gpio);
+  gpio.GPIO_Pin   = GPIO_Pin_13;
+  gpio.GPIO_Mode  = GPIO_Mode_AN;
+  GPIO_Init(GPIOC, &gpio);
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);
+
+  /* ========== 7. 关 RTC + PWR ========== */
   RCC_RTCCLKCmd(DISABLE);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, DISABLE);
+
+  /* ========== 8. 全局关中断 ========== */
   __disable_irq();
 }
+
 
 void JumpToApp(void)
 {
@@ -110,7 +191,7 @@ void JumpToApp(void)
   uint32_t app_msp = *(__IO uint32_t*)APP_FLASH_ADDR;
   printf("APP MSP Value: 0x%08X\r\n", app_msp);
 
-  printf("Disable all peripherals and interrupts, jump to APP\r\n");
+  printf("Disable all used peripherals and interrupts, jump to APP\r\n");
   disable_peripherals();
 
   if (((*(__IO uint32_t*)APP_FLASH_ADDR) & 0x2FFE0000) == 0x20020000)

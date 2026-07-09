@@ -1,0 +1,36 @@
+{
+    "tasks": [
+        {
+            "label": "cmake: configure",
+            "type": "shell",
+            "command": "/opt/ST/STM32CubeCLT_1.21.0/CMake/bin/cmake --preset Debug",
+            "detail": "Configure cmake build system (creates build/ directory)"
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "/opt/ST/STM32CubeCLT_1.21.0/CMake/bin/cmake --build --preset Debug",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build watch_bootloader using CMake + Ninja"
+        },
+        {
+            "label": "flash",
+            "type": "shell",
+            "command": "cd \"${workspaceFolder}\" && ./flash.sh",
+            "problemMatcher": [],
+            "detail": "Flash watch_bootloader to STM32F411CEU6 via J-Link"
+        },
+        {
+            "label": "erase",
+            "type": "shell",
+            "command": "cd \"${workspaceFolder}\" && ./erase.sh",
+            "problemMatcher": [],
+            "detail": "Full chip erase of STM32F411CEU6 (Bootloader + APP)"
+        }
+    ],
+    "version": "2.0.0"
+}

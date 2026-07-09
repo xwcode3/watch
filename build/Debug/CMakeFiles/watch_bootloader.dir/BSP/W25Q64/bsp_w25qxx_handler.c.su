@@ -1,0 +1,5 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:9:6:W25Q64_Init	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:24:9:W25Q64_EraseChip	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:45:9:W25Q64_WriteData	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:90:9:W25Q64_WriteData_End	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:139:9:W25Q64_ReadData	24	static

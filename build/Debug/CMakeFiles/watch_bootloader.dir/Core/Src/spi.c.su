@@ -1,0 +1,6 @@
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/spi.c:11:6:cs_io_init	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/spi.c:23:6:spi1_init	40	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/spi.c:67:6:spi1_set_speed	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/spi.c:81:9:spi1_read_write_byte	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/spi.c:94:9:spi1_write_byte	48	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/spi.c:128:9:spi1_read_byte	48	static

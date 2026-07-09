@@ -18,7 +18,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set the project name
-set(CMAKE_PROJECT_NAME watch)
+set(CMAKE_PROJECT_NAME watch_bootloader)
 
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -61,4 +61,26 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
     # Add user defined libraries
+)
+
+# Custom target: flash firmware to MCU via J-Link
+# Shows up in CMake Tools sidebar under Targets
+
+# Generate .bin file from .elf after linking
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>" "${CMAKE_PROJECT_NAME}.bin"
+    COMMENT "Generating ${CMAKE_PROJECT_NAME}.bin"
+)
+
+add_custom_target(flash
+    COMMAND ${CMAKE_SOURCE_DIR}/flash.sh
+    COMMENT "Flashing watch.elf to STM32F411CEU6 via J-Link"
+    USES_TERMINAL
+)
+
+# Custom target: full chip erase via J-Link
+add_custom_target(erase
+    COMMAND ${CMAKE_SOURCE_DIR}/erase.sh
+    COMMENT "Full chip erase of STM32F411CEU6 (Bootloader + APP)"
+    USES_TERMINAL
 )
