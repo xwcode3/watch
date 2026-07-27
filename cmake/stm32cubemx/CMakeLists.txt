@@ -23,7 +23,7 @@ set(MX_Include_Dirs
     ${CMAKE_CURRENT_SOURCE_DIR}/../../OS/port
 
 	# Middlewares
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES
 
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/RTT
 
@@ -31,7 +31,9 @@ set(MX_Include_Dirs
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/plugins/file
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/plugins/flash
 
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem
+
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/CRC
 
 	# BSP
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER
@@ -49,13 +51,15 @@ set(MX_Include_Dirs
 
 # STM32CubeMX generated application sources
 set(MX_Application_Src
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES/AES.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES/AES.c
 	
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/RTT/SEGGER_RTT.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/RTT/SEGGER_RTT_printf.c
 
-    # ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem/ymodem.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem/common.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem/ymodem.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Ymodem/common.c
+
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/CRC/crccitt.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/src/elog.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/src/elog_utils.c
@@ -73,7 +77,7 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/FreeRTOS_tasks.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/spi.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/flash.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/boot_manager.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/boot_manager.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/iic.c
 
 	# BSP
@@ -90,7 +94,7 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AT24Cxx/bsp_AT24Cxx_Driver.c
 
 	# APP
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../APP/OTA/ota.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../APP/OTA/ota.c
 )
 
 # STM32 Standard Peripheral Drivers (replacing HAL drivers)

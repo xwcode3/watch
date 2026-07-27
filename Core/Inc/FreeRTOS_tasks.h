@@ -21,7 +21,7 @@
 #include "bsp_usart_driver.h"
 #include "usart_parse.h"
 
-// #include "ota.h"
+#include "ota.h"
 
 void app_task_create(void);
 

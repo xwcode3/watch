@@ -47,20 +47,42 @@ int main(void)
 
 
   // 这里是因为 easylogger 初始化以及一些 printf、log_i 函数调用输出需要串口
-  USART1_Config();
+  // USART1_Config();
+  ota_usart1_config();   // 配置USART1用于OTA任务，以及实现printf重定向输出到USART1
 
   get_clock_info();
 
-  easylogger_config();
+  easylogger_config(); 
 
   if (1 == ee_CheckOk()) {
-    printf("EEPROM is OK!\r\n");
+    printf("APP EEPROM is OK!\r\n");
   }
 
   spi1_init();
   if (1 == W25Q64_Init()) {
     printf("W25Qxx is OK!\r\n");
   }
+
+  // 上电检查 ota 状态
+  ota_state e_ota_state = OTA_STATE_APP_NEED_UPDATE;
+  ee_ReadBytes(&e_ota_state, 0x00, 1);
+  printf("app read e_ota_state = 0x%02x\r\n", e_ota_state);
+
+  // ee_WriteBytes(0x00, 0x00, 1);
+  // ee_ReadBytes(&e_ota_state, 0x00, 1);
+  // printf("app read e_ota_state = 0x%02x\r\n", e_ota_state);
+  if (OTA_STATE_APP_FIRST_CHECKING == e_ota_state) {
+    e_ota_state = OTA_STATE_NO_APP_UPDATE;
+    ee_WriteBytes(&e_ota_state, 0x00, 1);
+    printf("e_ota_state = 0x44, app waiting for reset...\r\n");
+    // 等待 Bootloader 设置的看门狗主动复位
+    while (1) {}
+  } else if (OTA_STATE_NO_APP_UPDATE != e_ota_state) {
+    printf("app error, waiting for reset...\r\n");
+    SoftReset();  // 执行主动复位
+  }
+
+  printf("app check ok, start create tasks...\r\n");
 
   /* Add your application code here */
   app_task_create();
@@ -78,7 +100,7 @@ int main(void)
 
 void app_pre(void)
 {
-  SCB->VTOR = FLASH_BASE | 0x19000;
+  SCB->VTOR = FLASH_BASE | 0x10000;
 
   __enable_irq();   //  全局中断使能
 }
@@ -189,6 +211,7 @@ void SystemClock_Config2(void) {
 
 // 获取当前系统时钟频率
 void get_clock_info(void) {
+  printf("================== APP =====================\r\n");
   RCC_ClocksTypeDef RccClocks;
   RCC_GetClocksFreq(&RccClocks);
 

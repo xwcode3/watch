@@ -104,10 +104,12 @@ uint8_t i2c_WaitAck(void)
     /* CPU读取SDA口线状态 */
     if(GPIO_ReadInputDataBit(EEPROM_I2C_GPIO_PORT, EEPROM_I2C_SDA_PIN))
     {
+        /* SDA 为高电平, 表示器件没有应答 */
         re = 1;
     }
     else
-    {
+    {   
+        /* SDA 为低电平, 器件应答 */
         re = 0;
     }
     
@@ -176,6 +178,12 @@ uint8_t i2c_ReadByte(void)
 }
 
 /* 检测I2C总线设备是否存在 */
+/**
+ * @brief 检测I2C总线设备是否存在
+ * @param _Address: I2C设备地址
+ * @retval 0: 设备存在，应答
+ * @retval 1: 设备不存在，未应答
+ */
 uint8_t i2c_CheckDevice(uint8_t _Address)
 {
     uint8_t ucAck;

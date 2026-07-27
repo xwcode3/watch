@@ -1,4 +1,5 @@
 #include "ymodem.h"
+#include "ota.h"
 
 uint8_t file_name[FILE_NAME_LENGTH];
 uint32_t FlashDestination = BackAppAddress;
@@ -11,6 +12,9 @@ uint32_t RamSource;
 
 extern uint8_t tab_1024[1024];
 extern int32_t app_size;
+extern QueueHandle_t Q_YmodemReclength;
+extern QueueHandle_t Queue_AppDataBuffer;  // 用于接收App数据的队列
+extern SemaphoreHandle_t Semaphore_ExtFlashState;
 
 /**
   * @brief  Receive byte from sender
@@ -102,9 +106,161 @@ static int32_t Receive_Packet (uint8_t *data, int32_t *length, uint32_t timeout)
   {
     return -1;
   }
+
+  // CRC check
+  uint16_t u16_crc_check_data = crc_xmodem((data + PACKET_HEADER), packet_size);
+  uint16_t u16_crc_receive_data = *(data + PACKET_HEADER + packet_size) << 8;
+  u16_crc_receive_data += *(data + PACKET_HEADER + packet_size + 1);
+  if (u16_crc_check_data != u16_crc_receive_data) {
+    return -1;
+  }
+
   *length = packet_size;
   return 0;
 }
+
+/**
+  * @brief  Receive a file using the ymodem protocol
+  * @param  buf: Address of the first byte
+  * @retval The size of the file
+  */
+uint8_t file_size[FILE_SIZE_LENGTH], *file_ptr;
+int32_t i, packet_length, session_done, file_done, packets_received;
+int32_t errors, session_begin, size = 0;
+
+int32_t Ymodem_Receive_2buffer (uint8_t *buf1, uint8_t *buf2)
+{
+  // uint8_t packet_data[PACKET_1K_SIZE + PACKET_OVERHEAD], file_size[FILE_SIZE_LENGTH], *file_ptr, *buf_ptr;
+  // int32_t i, j, packet_length, session_done, file_done, packets_received, errors, session_begin, size = 0;
+
+  uint8_t *packet_data;
+  packet_data = buf1;
+
+  for (session_done = 0, errors = 0, session_begin = 0; ;)//初始化变量，进入循环
+  {
+    for (packets_received = 0, file_done = 0; ;)
+    {
+      // switch (Receive_Packet(packet_data, &packet_length, 2000))
+      switch (Receive_Packet(packet_data, &packet_length, NAK_TIMEOUT))
+      {
+        case 0:
+          errors = 0;
+          switch (packet_length)
+          {
+            /* Abort by sender */
+            case - 1:
+              Send_Byte(ACK);
+              return 0;
+            /* End of transmission */
+            case 0:
+              Send_Byte(ACK);
+              file_done = 1;
+              break;
+            /* Normal packet */
+            default:
+              if ((packet_data[PACKET_SEQNO_INDEX] & 0xff) != (packets_received & 0xff))
+              {
+                Send_Byte(NAK);
+              }
+              else
+              {
+                if (packets_received == 0)
+                {
+                  /* Filename packet */
+                  if (packet_data[PACKET_HEADER] != 0)
+                  {
+                    /* Filename packet has valid data */
+                    for (i = 0, file_ptr = packet_data + PACKET_HEADER; (*file_ptr != 0) && (i < FILE_NAME_LENGTH);)
+                    {
+                      file_name[i++] = *file_ptr++;
+                    }
+                    file_name[i++] = '\0';
+
+                    // Get the file size
+                    for (i = 0, file_ptr ++; (*file_ptr != ' ') && (i < FILE_SIZE_LENGTH);)
+                    {
+                      file_size[i++] = *file_ptr++;
+                    }
+                    file_size[i++] = '\0';
+                    Str2Int(file_size, &size);
+
+                    // int32_t * pu32_size = &size;
+                    // xQueueSend(Queue_AppDataBuffer, &pu32_size, 0);
+                    
+                    if (packet_data == buf1) {
+                      packet_data = buf2;
+                    } else {
+                      packet_data = buf1;
+                    }
+
+                    Send_Byte(ACK);
+                    Send_Byte(CRC16);
+                  }
+                  /* Filename packet is empty, end session */
+                  else
+                  {
+                    Send_Byte(ACK);
+                    file_done = 1;
+                    session_done = 1;
+                    break;
+                  }
+                }
+                /* Data packet */
+                else {
+                  packet_data += PACKET_HEADER;
+                  // xQueueSend(Queue_AppDataBuffer, &packet_data, 0);
+                  W25Q64_WriteData(packet_data, packet_length);
+                  packet_data -= PACKET_HEADER;
+
+                  // xSemaphoreTake(Semaphore_ExtFlashState, portMAX_DELAY);
+                  // xSemaphoreGive(Semaphore_ExtFlashState);
+
+                  if (packet_data == buf1) {
+                    packet_data = buf2;
+                  } else {
+                    packet_data = buf1;
+                  }
+
+                  Send_Byte(ACK);
+                }
+                packets_received ++;
+                session_begin = 1;
+              }
+          }
+          break;
+        case 1:
+          Send_Byte(CA);
+          Send_Byte(CA);
+          return -3;
+        default:
+        // 发送的时候需要错误超过最大错误次数才中止
+         if (session_begin > 0)
+         {
+            errors ++;
+         }
+          if (errors > MAX_ERRORS)
+          {
+            Send_Byte(CA);
+            Send_Byte(CA);
+            return 0;
+          }
+          Send_Byte(CRC16);
+          break;
+      }
+      if (file_done != 0)
+      {
+        break;
+      }
+    }
+    if (session_done != 0)
+    {
+      break;
+    }
+  }
+  W25Q64_WriteData_End();
+  return (int32_t)size;
+}
+
 
 /**
   * @brief  Receive a file using the ymodem protocol
@@ -422,11 +578,10 @@ void Ymodem_SendPacket(uint8_t *data, uint16_t length)
   }
 }
 
-/**
-  * @brief  Transmit a file using the ymodem protocol
-  * @param  buf: Address of the first byte
-  * @retval The size of the file
-  */
+
+
+
+
 uint8_t Ymodem_Transmit (uint8_t *buf, const uint8_t* sendFileName, uint32_t sizeFile)
 {
   
@@ -649,4 +804,3 @@ uint8_t Ymodem_Transmit (uint8_t *buf, const uint8_t* sendFileName, uint32_t siz
   }
   return 0; /* file trasmitted successfully */
 }
-

@@ -132,6 +132,16 @@ void USART1_DMA2_Stream2_Init(uint8_t* buffer_address, uint32_t buffer_size) {
 
 uint8_t dma_flag = 0; // DMA传输完成标志
 void DMA2_Stream2_IRQHandler(void) {
+
+    if (DMA_GetITStatus(DMA2_Stream2, DMA_IT_TCIF2)) {
+        // DMA传输完成处理
+        // 这里可以添加传输完成后的处理逻辑
+        
+        // 清除中断标志
+        DMA_ClearITPendingBit(DMA2_Stream2, DMA_IT_TCIF2);
+    }
+
+#ifdef USART1_DMA_RING
     // 半缓冲处理
     if (DMA_GetITStatus(DMA2_Stream2, DMA_IT_HTIF2) != RESET) {
         DMA_ClearITPendingBit(DMA2_Stream2, DMA_IT_HTIF2);
@@ -154,6 +164,8 @@ void DMA2_Stream2_IRQHandler(void) {
 
         usart1_state.dma_full_flag = 1; // 设置DMA全满传输完成标志
     }
+#endif
+
 }
 
 /*
@@ -228,10 +240,132 @@ void USART1_Config(void)
     USART_Cmd(USART1, ENABLE);
 }
 
+/**
+ * @brief  用于 OTA 任务的 USART1 DMA配置函数
+ * @param  void
+ * @retval void
+ */
+void ota_usart1_dma_config(void) {
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+
+    DMA_InitTypeDef dma_init;
+    dma_init.DMA_Channel = DMA_Channel_4;
+    dma_init.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
+    // dma_init.DMA_Memory0BaseAddr = (uint32_t)(RxBuffer);
+    dma_init.DMA_DIR = DMA_DIR_PeripheralToMemory;  // 外设到内存
+    // dma_init.DMA_BufferSize = BUFFER_SIZE; // 缓冲区大小
+    dma_init.DMA_PeripheralInc = DMA_PeripheralInc_Disable; // 外设地址不递增
+    dma_init.DMA_MemoryInc = DMA_MemoryInc_Enable; // 内存地址递增
+    dma_init.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; // 外设数据宽度：字节
+    dma_init.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; // 内存数据宽度：字节
+    dma_init.DMA_Mode = DMA_Mode_Normal; // 普通模式
+    dma_init.DMA_Priority = DMA_Priority_High; // 高优先级
+    dma_init.DMA_FIFOMode = DMA_FIFOMode_Disable; // 关闭FIFO
+    dma_init.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+    dma_init.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+    dma_init.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+
+    DMA_Init(DMA2_Stream2, &dma_init); //usart1_rx 使用DMA2_Stream2
+
+    DMA_Cmd(DMA2_Stream2, ENABLE);
+}
+
+
+/**
+ * @brief  用于 ota 任务的 USART1 配置函数
+ * @param  void
+ * @retval void
+ */
+void ota_usart1_config(void) {
+    // 先完全禁用并复位USART1
+    USART_Cmd(USART1, DISABLE);
+    
+    // 复位USART1外设
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_USART1, ENABLE);
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_USART1, DISABLE);
+
+    // enable USART1 and GPIOA clocks
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);  // enable USART1 clock
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);   // enable GPIOA clock
+
+    // configure GPIO, USART1 TX pin : PA9 and RX pin : PA10
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    // 配置GPIO复用功能
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);  // PA9 - USART1_TX
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1); // PA10 - USART1_RX
+
+    // configure usart1
+    USART_InitTypeDef USART_InitStructure;
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(USART1, &USART_InitStructure);
+
+    // configure usart1 idle line detection interrupt
+    USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
+
+    // configure NVIC for usart1
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+    USART_Cmd(USART1, ENABLE);
+
+    // enable USART1 DMA receive
+    USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
+
+    ota_usart1_dma_config();    // 配置DMA2_Stream2用于USART1接收数据
+}
+
+
+extern QueueHandle_t Q_YmodemReclength; // 用于传递串口接收数据长度的消息队列
 // USART1接收数据中断服务程序
 // USART1 interrupt service program
 void USART1_IRQHandler(void) {
 
+#if 1   /* ota 串口接收来自服务器的指令 */
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
+        char ch = USART_ReceiveData(USART1);
+        USART_SendData(USART1, ch);
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    }
+
+    if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET) {
+        // clear IDLE flag by reading SR and DR
+        // 清除IDLE标志 - 通过读SR和DR寄存器
+        volatile uint32_t temp;
+        temp = USART1->SR;  // 读状态寄存器
+        temp = USART1->DR;  // 读数据寄存器
+        (void)temp;         // 避免编译器警告
+
+        uint16_t rec_len = dma2_init_ndtr - DMA_GetCurrDataCounter(DMA2_Stream2);
+
+        // log_i("USART1 idle interrupt, dma2_init = %d, received length: %d", dma2_init_ndtr, rec_len);
+
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;  
+        if (pdFALSE != xQueueSendFromISR(Q_YmodemReclength, &rec_len, 0)) {
+            // 成功发送消息到队列
+            xHigherPriorityTaskWoken = pdTRUE;
+        }
+
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+#endif
+
+#if 0 /* 串口、dma 配合环形缓冲区模式 */
     uint16_t data_len = 0;
 
     if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET) {
@@ -250,6 +384,22 @@ void USART1_IRQHandler(void) {
             uart_idle_irq_callback(data_len);
             // usart1_state.dma_full_flag = 0; // 清除DMA全满标志
         }
+    }
+#endif 
+}
+
+/**
+ * @brief  串口发送函数，使用USART1，使用阻塞方式
+ * @param  buffer: 要发送的数据缓冲区
+ * @param  length: 要发送的数据长度
+ * @retval void
+ */
+void usart1_transmit(uint8_t *buffer, uint16_t length) {
+    for (uint16_t i = 0; i < length; i++) {
+        // 等待发送缓冲区为空
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+        // 发送字符
+        USART_SendData(USART1, buffer[i]);
     }
 }
 
@@ -291,9 +441,7 @@ uint8_t USART_ReceiveChar(USART_TypeDef* USARTx) {
  * @param  length: 缓冲区长度
  * @retval void
  */
-void uartx_receive2idle_dma(
-    USART_TypeDef* usartx, uint8_t* buffer, uint16_t length
-) {
+void uartx_receive2idle_dma( USART_TypeDef* usartx, uint8_t* buffer, uint16_t length) {
     if (usartx == USART1) {
         // 1. 先禁用USART的DMA请求（防止新数据触发DMA）
         USART_DMACmd(USART1, USART_DMAReq_Rx, DISABLE);
@@ -313,4 +461,56 @@ void uartx_receive2idle_dma(
         DMA2_Stream2->CR |= DMA_SxCR_EN;
         USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
     }
+}
+
+
+/**
+ * @brief  进入 Ymodem 接收模式：关闭 USART1 的 DMA 转运，改为轮询 DR 接收
+ * @note   在调用 Ymodem_Receive_2Buffer() 之前调用。
+ *         ymodem 协议栈通过 SerialKeyPressed() 直接轮询 USART1->DR，
+ *         不需要 DMA，也不需要空闲线中断，因此这里把 DMA 接收和空闲线中断都关掉，
+ *         避免 DMA 与轮询抢字节、以及空闲线误触发命令队列。
+ */
+void YmodemUart_EnterRxMode(void)
+{
+    /* 1. 关闭 USART -> DMA 的接收请求，停止 DMA 搬运 */
+    USART_DMACmd(USART1, USART_DMAReq_Rx, DISABLE);
+
+    /* 2. 关闭 DMA2_Stream2（Normal 模式下一收完就停，这里确保彻底关掉） */
+    DMA_Cmd(DMA2_Stream2, DISABLE);
+    while (DMA_GetCmdStatus(DMA2_Stream2) != DISABLE) { }
+
+    /* 3. 关闭空闲线中断（ymodem 用轮询，不需要；也避免误触发 Q_YmodemReclength） */
+    USART_ITConfig(USART1, USART_IT_IDLE, DISABLE);
+
+    /* 4. 丢弃可能残留的字节，清除 ORE / IDLE / RXNE 标志，防止 ymodem 读到旧数据 */
+    (void)USART1->SR;
+    (void)USART1->DR;
+    USART_ClearFlag(USART1, USART_FLAG_ORE | USART_FLAG_IDLE | USART_FLAG_RXNE);
+
+    /* 5. 确保接收器使能（Rx 必须开着，ymodem 才能收到字节） */
+    USART_Cmd(USART1, ENABLE);
+}
+
+
+/**
+ * @brief  恢复为当前的 DMA 转运模式（OTA 命令接收）
+ * @param  cmd_buf : 恢复后用于接收 OTA 命令的缓冲区（如 s_au8_OtaCmd）
+ * @param  cmd_len : 命令缓冲区长度
+ * @note   在 Ymodem_Receive_2Buffer() 返回之后调用，
+ *         把串口交还给 OTA 命令等待状态（一次性 DMA + 空闲线通知）。
+ */
+void YmodemUart_RestoreDmaMode(uint8_t* cmd_buf, uint16_t cmd_len)
+{
+    /* 1. 复位并重新初始化 DMA2_Stream2 为 Normal（一次性）模式 */
+    ota_usart1_dma_config();
+
+    /* 2. 重新打开 USART -> DMA 接收请求 */
+    USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
+
+    /* 3. 重新打开空闲线中断（命令帧结束 -> 通知 Q_YmodemReclength） */
+    USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
+
+    /* 4. 武装 DMA：把下一帧 OTA 命令收进 cmd_buf */
+    // uartx_receive2idle_dma(USART1, cmd_buf, cmd_len);
 }

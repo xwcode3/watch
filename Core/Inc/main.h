@@ -44,6 +44,7 @@
 #include "bsp_AT24Cxx_Driver.h"
 #include "bsp_w25qxx.h"
 #include "bsp_w25qxx_handler.h"
+#include "ota.h"
 
 
 /* Exported types ------------------------------------------------------------*/

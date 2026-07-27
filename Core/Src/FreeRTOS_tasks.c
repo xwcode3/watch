@@ -218,14 +218,17 @@ void app_task_create(void)
         printf("led_blink_task create failed\r\n");
     }
 
-    // extern TaskHandle_t ota_task_handle;
-    // task_create_ret = xTaskCreate(ota_task, "ota_task", 256, NULL, 2, &ota_task_handle);
-    // if (task_create_ret != pdPASS)
-    // {
-    //     printf("ota_task create failed\r\n");
-    // }
+    extern TaskHandle_t ota_task_handle;
+    task_create_ret = xTaskCreate(ota_task, "ota_task", 256, NULL, 2, &ota_task_handle);
+    if (task_create_ret != pdPASS)
+    {
+        printf("ota_task create failed\r\n");
+    }
 
-    usart_dma_init();
+    // usart_dma_init();
 
 }
+
+
+
 

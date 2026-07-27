@@ -170,7 +170,7 @@ led_status_t led_off_on_irq(void) {
  */
 void led_blink_task(void *pvParameters) {
     while (1) {
-        printf("led_blink_task run!\r\n");
+        // printf("led_blink_task run!\r\n");
         led_toggle();
         vTaskDelay(2000);
     }

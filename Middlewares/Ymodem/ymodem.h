@@ -3,9 +3,16 @@
 
 #include "stm32f4xx.h"
 #include <stdint.h>
+
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "semphr.h"
+
 #include "common.h"
 #include "flash.h"
 #include "bsp_w25qxx_handler.h"
+
+#include "checksum.h"
 
 
 #define PACKET_SEQNO_INDEX      (1)
@@ -36,6 +43,7 @@
 
 
 int32_t Ymodem_Receive (uint8_t *);
+int32_t Ymodem_Receive_2buffer (uint8_t *buf1, uint8_t *buf2);
 uint8_t Ymodem_Transmit (uint8_t *,const  uint8_t* , uint32_t );
 uint16_t UpdateCRC16(uint16_t crcIn, uint8_t byte);
 uint16_t Cal_CRC16(const uint8_t* data, uint32_t size);
