@@ -31,7 +31,7 @@ static void	W25Qx_Reset(void)
 
 /**
   * @brief  Initializes the W25QXXXX interface.
-  * @retval None
+  * @retval 0 on success, 1 on failure
   */
 uint8_t W25Qx_Init(void)
 {

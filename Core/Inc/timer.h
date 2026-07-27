@@ -46,4 +46,18 @@ void timer_5_init(void);
  */
 void TIM5_IRQHandler(void);
 
+/**
+  * @brief  Inserts a delay time.
+  * @param  nTime: specifies the delay time length, in milliseconds.
+  * @retval None
+  */
+void Delay(__IO uint32_t nTime);
+
+/**
+  * @brief  Decrements the TimingDelay variable.
+  * @param  None
+  * @retval None
+  */
+void TimingDelay_Decrement(void);
+
 #endif //WATCH_TIMER_H

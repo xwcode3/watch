@@ -7,6 +7,9 @@
 
 #define EXTERN_FLASH
 
+#define BLOCK_1     0
+#define BLOCK_2     1
+#define BLOCK_SIZE  0x10000 // 64KB
 
 /*
 最小读写单元 Pag = 256 byte
@@ -22,13 +25,14 @@ typedef struct {
     uint8_t read_sector_index;
 } st_w25q_handler;
 
-void W25Q64_Init(void);
+void set_block_parameter(uint8_t block_index, uint32_t app_size);
+uint32_t Read_BlockSize(uint8_t block_index);
+uint8_t W25Q64_Init(void);
+void Erase_Flash_Block(uint8_t block_index);
 uint8_t W25Q64_EraseChip(void);
-uint8_t W25Q64_WriteData(uint8_t *data, uint32_t length);
-uint8_t W25Q64_WriteData_End(void);
-uint8_t W25Q64_ReadData(uint8_t *data, uint16_t *length);
-
-
+uint8_t W25Q64_WriteData(uint8_t block_index, uint8_t *data, uint32_t length);
+uint8_t W25Q64_WriteData_End(uint8_t block_index);
+uint8_t W25Q64_ReadData(uint8_t block_index, uint8_t *data, uint16_t *length);
 
 
 #endif // WATCH_BSP_W25QXX_HANDLER_H

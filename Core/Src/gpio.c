@@ -5,10 +5,6 @@
 
 
 void gpio_init() {
-    // 配置 NVIC 优先级分组为 Group 4（4位抢占优先级，0位子优先级）
-    // 这与 FreeRTOS 的配置兼容
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-    
     led_init();  // 启用 LED 初始化
     key_init();
     // timer_2_init();

@@ -27,17 +27,9 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-#define APP_FLASH_ADDR 0x8019000    // APP 的起始烧录地址
-
-static __IO uint32_t uwTimingDelay;
-RCC_ClocksTypeDef RCC_Clocks;
-
-uint8_t au8_test[1024];
-
 /* Private function prototypes -----------------------------------------------*/
 
-typedef void (*pFunction) (void);   // 声明函数指针
-static pFunction JumpToAppLocation;
+
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -45,166 +37,52 @@ static pFunction JumpToAppLocation;
   * @param  None
   * @retval None
   */
-int main(void)
-{
- /*!< At this stage the microcontroller clock setting is already configured, 
+int main(void) {
+    /*!< At this stage the microcontroller clock setting is already configured, 
        this is done through SystemInit() function which is called from startup
        files before to branch to application main.
        To reconfigure the default setting of SystemInit() function, 
-       refer to system_stm32f4xx.c file */
-  // RCC_ClockSecuritySystemCmd(ENABLE);
-  SystemClock_Config();
-  gpio_init();
+       refer to system_stm32f4xx.c file 
+    */
+
+    SystemClock_Config();
 
 
-  // 这里是因为 easylogger 初始化以及一些 printf、log_i 函数调用输出需要串口
-  USART1_Config();
+    // 配置 NVIC 优先级分组为 Group 4（4位抢占优先级，0位子优先级）
+    // 这与 FreeRTOS 的配置兼容
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-  get_clock_info();
+    gpio_init();
 
-  bootloader_led_blink(); // 闪烁 10 次，进行提示 Bootloader 正在运行
+    // 这里是因为 easylogger 初始化以及一些 printf、log_i 函数调用输出需要串口
+    USART1_Config();
+    printf("\r\n");
+
+    get_clock_info();
 
 
-  spi1_init();  // 初始化 SPI1
-  // 初始化 W25Q64 FLASH
-  if (W25Qx_Init() == 0) {
-    printf("W25Qx_Init ok\r\n");
-  }
+    easylogger_config();
 
-  uint32_t file_size = 0;
-  if (1 == key_scan_bootloader()) {
-    printf("key pressed, receive new APP bin file\r\n");
-
-    file_size = Ymodem_Receive(au8_test);
-    printf("receive new APP bin file done, file size = %d bytes\r\n", file_size);
-
-    if (0 == copy_app_to_executable(file_size)) {
-      printf("bootloader jump to APP\r\n");
-      JumpToApp();
-    } else {
-      printf("copy app to executable area failed\r\n");
-      while (1) {}
+    spi1_init();  // 初始化 SPI1
+    // 初始化 W25Q64 FLASH
+    if (W25Q64_Init() == 0) {
+      printf("W25Q64_Init ok\r\n");
     }
-  } else {
-    printf("key not pressed, jump to APP\r\n");
-    JumpToApp();
-  }
 
-  JumpToApp();
+    if (1 == ee_CheckOk()) {
+      printf("Bootloadwe EEPROM is OK!\r\n");
+    }
 
-  // easylogger_config();
+    OTA_StateManager();  // OTA 状态机处理函数
 
-  // bsp_adc_init();
+    /* Infinite loop */
+    for (;;)
+    {
 
-  /* Add your application code here */
-  // app_task_create();
-
-  // vTaskStartScheduler();
-
-  /* Infinite loop */
-  for (;;)
-  {
-
-  }
-
-}
-
-void bootloader_led_blink(void)
-{
-  for (int i = 0; i < 10; i++)
-  {
-    led_control(LED_TOGGLE);
-    Delay(100);
-  }
+    }
 }
 
 
-void disable_peripherals(void) {
-  /* ========== 1. 关 USART1 ========== */
-  NVIC_DisableIRQ(USART1_IRQn);
-  while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET) { }
-  USART_Cmd(USART1, DISABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, DISABLE);
-
-  /* ========== 2. 关 SPI1 ========== */
-  SPI_Cmd(SPI1, DISABLE);
-  NVIC_DisableIRQ(SPI1_IRQn);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE);
-
-  // /* ========== 3. 关 ADC + DMA ========== */
-  // ADC_Cmd(ADC1, DISABLE);
-  // NVIC_DisableIRQ(ADC_IRQn);
-
-  // DMA_Cmd(DMA2_Stream0, DISABLE);
-  // NVIC_DisableIRQ(DMA2_Stream0_IRQn);
-  // RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, DISABLE);
-
-  // /* ========== 4. 关 Timer ========== */
-  // TIM_Cmd(TIM2, DISABLE);
-  // NVIC_DisableIRQ(TIM2_IRQn);
-  // RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, DISABLE);
-
-  // TIM_Cmd(TIM3, DISABLE);
-  // NVIC_DisableIRQ(TIM3_IRQn);
-  // RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, DISABLE);
-
-  /* ========== 5. 关 KEY (PA0 + EXTI0) ========== */
-  // 先清 EXTI 屏蔽位，防止关时钟后 EXTI 仍然挂起
-  EXTI->IMR &= ~EXTI_Line0;
-  EXTI->PR  =  EXTI_Line0;    // 写 1 清除 pending
-  NVIC_DisableIRQ(EXTI0_IRQn);
-  // GPIOA 引脚恢复默认态
-  GPIO_InitTypeDef gpio;
-  GPIO_StructInit(&gpio);
-  gpio.GPIO_Pin   = GPIO_Pin_0;
-  gpio.GPIO_Mode  = GPIO_Mode_AN;   // 模拟模式，最省电最安全
-  GPIO_Init(GPIOA, &gpio);
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, DISABLE);
-
-  /* ========== 6. 关 LED (PC13) ========== */
-  GPIO_StructInit(&gpio);
-  gpio.GPIO_Pin   = GPIO_Pin_13;
-  gpio.GPIO_Mode  = GPIO_Mode_AN;
-  GPIO_Init(GPIOC, &gpio);
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, DISABLE);
-
-  /* ========== 7. 关 RTC + PWR ========== */
-  RCC_RTCCLKCmd(DISABLE);
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, DISABLE);
-
-  /* ========== 8. 全局关中断 ========== */
-  __disable_irq();
-}
-
-
-void JumpToApp(void)
-{
-  uint32_t jumpAddr;
-  Delay(2000);
-
-  printf("bootloader running...\r\n");
-
-  Delay(1000);
-
-
-  printf("delay 1s end\r\n");
-  uint32_t app_msp = *(__IO uint32_t*)APP_FLASH_ADDR;
-  printf("APP MSP Value: 0x%08X\r\n", app_msp);
-
-  printf("Disable all used peripherals and interrupts, jump to APP\r\n");
-  disable_peripherals();
-
-  if (((*(__IO uint32_t*)APP_FLASH_ADDR) & 0x2FFE0000) == 0x20020000)
-  {
-    jumpAddr = *(__IO uint32_t*)(APP_FLASH_ADDR + 4);
-
-    JumpToAppLocation = (pFunction)jumpAddr;
-
-    __set_MSP(*(__IO uint32_t*)APP_FLASH_ADDR);
-
-    JumpToAppLocation();
-  }
-}
 
 void easylogger_config(void) {
   elog_init();
@@ -215,112 +93,6 @@ void easylogger_config(void) {
   elog_start();
 }
 
-int __io_putchar(int ch)
-{
-    USART1_SendByte((uint8_t)ch);  // 将printf函数重定向输出到串口
-  // SEGGER_RTT_PutChar(0, ch); // 将字符发送到RTT的0号通道
-    return ch;
-}
-
-void Delay(__IO uint32_t nTime)
-{ 
-  uwTimingDelay = nTime;
-
-  while(uwTimingDelay != 0);
-}
-
-
-void TimingDelay_Decrement(void)
-{
-  if (uwTimingDelay != 0x00)
-  { 
-    uwTimingDelay--;
-  }
-}
-
-
-void SystemClock_Config(void) {
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); // 使能 PWR 时钟
-
-  PWR->CR |= PWR_CR_VOS; // 设置电压调节器输出电压范围 1 (1.2V)
-
-  while (PWR_GetFlagStatus(PWR_FLAG_VOSRDY) == RESET);
-
-  /* 使能HSE并等待稳定 */
-  RCC_HSEConfig(RCC_HSE_ON);
-  while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET);
-
-  RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
-
-  RCC_PLLCmd(ENABLE);
-  while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
-
-  FLASH_PrefetchBufferCmd(ENABLE);
-  FLASH_InstructionCacheCmd(ENABLE);
-  FLASH_DataCacheCmd(ENABLE);
-  FLASH_SetLatency(FLASH_Latency_3);
-
-  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-  RCC_HCLKConfig(RCC_SYSCLK_Div1);
-  RCC_PCLK1Config(RCC_HCLK_Div2);
-  RCC_PCLK2Config(RCC_HCLK_Div1);
-
-  SystemCoreClockUpdate();
-  SysTick_Config((SystemCoreClock / 1000));  // 1ms
-}
-
-// 配置使用外部高速时钟 HSE 作为时钟源
-void SystemClock_Config2(void) {
-  ErrorStatus HSEStartUpStatus;
-
-  // 1. 复位 RCC 时钟配置为默认值
-  RCC_DeInit();
-
-  // 2. 开启 PWR 时钟并配置电压调节器（跑 100MHz 必须开启 Scale1）
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-  PWR_MainRegulatorModeConfig(PWR_Regulator_Voltage_Scale1);
-
-  // 3. 配置 Flash 等待周期为 3 个时钟周期（100MHz 必须配 3WS）
-  FLASH_SetLatency(FLASH_Latency_3);
-
-  // 4. 使能 HSE 并等待启动
-  RCC_HSEConfig(RCC_HSE_ON);
-  HSEStartUpStatus = RCC_WaitForHSEStartUp();
-
-  if (HSEStartUpStatus == SUCCESS)
-  {
-    // 5. 配置 PLL：HSE(25MHz) / 12 = 2.083MHz -> * 96 = 200MHz -> / 2 = 100MHz
-    RCC_PLLConfig(RCC_PLLSource_HSE, 12, 96, 2, 4);
-
-    // 6. 使能 PLL 并等待锁定
-    RCC_PLLCmd(ENABLE);
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET) {}
-
-    // 7. 配置 AHB/APB 总线分频器
-    RCC_HCLKConfig(RCC_SYSCLK_Div1);      // AHB = 100MHz
-    RCC_PCLK1Config(RCC_HCLK_Div2);       // APB1 = 50MHz (最高限制50MHz)
-    RCC_PCLK2Config(RCC_HCLK_Div1);       // APB2 = 100MHz
-
-    // 8. 切换系统时钟源到 PLL
-    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-    while (RCC_GetSYSCLKSource() != 0x08) {} // 等待 PLL 成为系统时钟
-
-    SysTick_Config(100000); // 1ms，开启SysTick中断
-  }
-}
-
-// 获取当前系统时钟频率
-void get_clock_info(void) {
-  RCC_ClocksTypeDef RccClocks;
-  RCC_GetClocksFreq(&RccClocks);
-
-  printf("SYSCLK Frequency: %lu Hz\r\n", RccClocks.SYSCLK_Frequency);
-  printf("HCLK Frequency: %lu Hz\r\n", RccClocks.HCLK_Frequency);
-  printf("PCLK1 Frequency: %lu Hz\r\n", RccClocks.PCLK1_Frequency);
-  printf("PCLK2 Frequency: %lu Hz\r\n", RccClocks.PCLK2_Frequency);
-
-  printf("system core clock = %lu Hz\r\n", SystemCoreClock);
-}
 
 #ifdef  USE_FULL_ASSERT
 

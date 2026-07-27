@@ -80,4 +80,11 @@ void USART_SendChar(USART_TypeDef* USARTx, uint8_t data);
 uint8_t USART_ReceiveChar(USART_TypeDef* USARTx);
 
 
+/**
+ * @brief 重定向 printf 到 USART1
+ * @note 这样就能直接使用 printf 函数了
+ */
+int __io_putchar(int ch);
+
+
 #endif //WATCH_USART_H

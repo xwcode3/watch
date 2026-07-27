@@ -6,6 +6,7 @@
 #include "common.h"
 #include "flash.h"
 #include "bsp_w25qxx_handler.h"
+#include "checksum.h"
 
 
 #define PACKET_SEQNO_INDEX      (1)

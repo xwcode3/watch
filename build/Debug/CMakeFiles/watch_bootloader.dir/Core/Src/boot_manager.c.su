@@ -1,3 +1,11 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:11:6:JumpToApp1	24	static,ignoring_inline_asm
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:88:8:back_to_app	64	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:146:8:copy_app_to_executable	80	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1559:22:NVIC_DisableIRQ	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/cmake/stm32cubemx/../../Drivers/CMSIS/core_cm4.h:1721:22:NVIC_SystemReset	4	static,ignoring_inline_asm
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:6:13:bootloader_led_blink	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:15:6:disable_peripherals	16	static,ignoring_inline_asm
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:72:6:JumpToApp	24	static,ignoring_inline_asm
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:220:6:OTA_StateManager	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:428:6:System_SoftwareReset	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:439:8:App_To_ExA	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:458:8:ExA_To_ExB_AES	64	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:526:8:ExB_To_App	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/Core/Src/boot_manager.c:569:8:ExA_To_App	32	static

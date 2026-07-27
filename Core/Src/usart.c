@@ -3,6 +3,13 @@
 //
 #include "usart.h"
 
+int __io_putchar(int ch)
+{
+    USART1_SendByte((uint8_t)ch);  // 将printf函数重定向输出到串口
+  // SEGGER_RTT_PutChar(0, ch); // 将字符发送到RTT的0号通道
+    return ch;
+}
+
 /* DMA半满、全满以及USART空闲中断标志 */
 typedef enum {
     UART_EVENT_DMA_HALF_COMPLETE = 0,   // DMA 半缓冲处理

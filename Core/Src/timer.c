@@ -96,3 +96,21 @@ void TIM5_IRQHandler(void) {
         led_off_on_irq();
     }
 }
+
+static __IO uint32_t uwTimingDelay;
+
+void Delay(__IO uint32_t nTime)
+{ 
+  uwTimingDelay = nTime;
+
+  while(uwTimingDelay != 0);
+}
+
+
+void TimingDelay_Decrement(void)
+{
+  if (uwTimingDelay != 0x00)
+  { 
+    uwTimingDelay--;
+  }
+}

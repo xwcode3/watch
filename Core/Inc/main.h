@@ -38,11 +38,13 @@
 #include "gpio.h"
 #include "spi.h"
 #include "boot_manager.h"
+#include "clock.h"
 
 // #include "bsp_adc.h"
 #include "bsp_led.h"
 #include "bsp_key.h"
 #include "bsp_w25qxx.h"
+#include "bsp_w25qxx_handler.h"
 
 
 /* Exported types ------------------------------------------------------------*/
@@ -51,44 +53,11 @@
 /* Exported functions ------------------------------------------------------- */
 
 
-/**
- * @brief Blink the led
- */
-void bootloader_led_blink(void);
 
 
-/**
- * @brief Disable all peripherals and interrupts
- */
-void disable_peripherals(void);
-
-/**
- * @brief Disable all peripherals and interrupts and jump to APP
- */
-void JumpToApp(void);
-
-/**
-  * @brief  Decrements the TimingDelay variable.
-  * @param  None
-  * @retval None
-  */
-void TimingDelay_Decrement(void);
-
-/**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow :
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 100000000
-  *            HCLK(Hz)                       = 100000000
-  */
-void SystemClock_Config(void);
 
 
-// 获取当前系统时钟频率
-/**
- * @brief Get clock info
- */
-void get_clock_info(void);
+
 
 /**
   * @brief  EasyLogger 配置
@@ -97,18 +66,9 @@ void get_clock_info(void);
   */
 void easylogger_config(void);
 
-/**
- * @brief 重定向 printf 到 USART1
- * @note 这样就能直接使用 printf 函数了
- */
-int __io_putchar(int ch);
 
-/**
-  * @brief  Inserts a delay time.
-  * @param  nTime: specifies the delay time length, in milliseconds.
-  * @retval None
-  */
-void Delay(__IO uint32_t nTime);
+
+
 
 #endif /* __MAIN_H */
 

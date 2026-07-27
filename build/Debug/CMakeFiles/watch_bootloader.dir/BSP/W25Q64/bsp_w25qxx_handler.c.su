@@ -1,5 +1,8 @@
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:9:6:W25Q64_Init	8	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:24:9:W25Q64_EraseChip	8	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:45:9:W25Q64_WriteData	32	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:90:9:W25Q64_WriteData_End	24	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:139:9:W25Q64_ReadData	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:29:6:set_block_parameter	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:39:10:Read_BlockSize	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:47:9:W25Q64_Init	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:69:6:Erase_Flash_Block	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:81:9:W25Q64_EraseChip	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:100:9:W25Q64_WriteData	48	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:143:9:W25Q64_WriteData_End	32	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/bootloader/BSP/W25Q64/bsp_w25qxx_handler.c:194:9:W25Q64_ReadData	32	static
