@@ -207,6 +207,53 @@ void usart_dma_init()
 }
 
 
+#if 1 /* LED 测试代码 */
+
+led_handler_status_t handler_thread( void *argument)
+{    
+     vTaskDelay(1000);
+#ifdef DEBUG
+        DEBUG_OUT("Start_handler_thread \r\n");
+#endif // DEBUG
+
+    led_handler_status_t ret = HANDLER_OK;
+    bsp_led_handler_t   *   p_led_handler;
+    led_event_t                       msg;
+    /*************0.Checing the target statues  ******************************/
+    //1.check if the target has been instantiated
+    /*************1.Checing the input parameters******************************/
+
+    vTaskDelay(10);
+    if ( NULL != argument )
+    {
+        p_led_handler = argument;
+    }
+    /*************2.Sending event to LED queue********************************/
+
+    for(;;)
+    {
+        DEBUG_OUT("Start_handler_thread 2\r\n");
+        ret = p_led_handler->p_os_queue_interface->pf_os_queue_get(
+                                                p_led_handler->queue_handler,
+                                                                        &msg,
+                                                                           0);
+        if ( HANDLER_OK  == ret )
+        {
+            DEBUG_OUT("the message received \r\n");
+            /*****3.process the received event *******************************/
+            __event_process(p_led_handler, msg);
+        }
+        vTaskDelay(1000);
+    }
+
+}
+
+
+
+#endif /* LED 测试代码 */
+
+
+
 void app_task_create(void)
 {
     // adc_and_dma_init();

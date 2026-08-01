@@ -17,6 +17,8 @@
 
 #include "bsp_key.h"
 #include "bsp_led.h"
+#include "bsp_led_driver.h"
+#include "bsp_led_handler.h"
 #include "bsp_adc.h"
 #include "bsp_usart_driver.h"
 #include "usart_parse.h"
