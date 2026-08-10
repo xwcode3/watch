@@ -9,13 +9,14 @@
 //2.1 CPU driver
 #include "stm32f4xx.h"    //ARM provided 
 //2.2 Core
-#include "main.h"
-#include "usart.h"
-#include "gpio.h"
+// [OSAL old] #include "main.h"
+// [OSAL old] #include "usart.h"
+// [OSAL old] #include "gpio.h"
 
 //3.OS layer head file
-#include "queue.h"
-#include "task.h"
+// [OSAL old] #include "queue.h"
+// [OSAL old] #include "task.h"
+#include "osal_freertos.h"
 
 //4.BSP layer head file
 #include "bsp_led_driver.h"
@@ -47,60 +48,61 @@ led_status_t led_on_myown                                               (void);
 led_status_t led_off_myown                                              (void);
 extern led_operations_t                                   led_operations_myown;
 
-/*DRIVER_Layer:---<time_base_ms_myown>----*/
-led_status_t pf_get_time_ms_mywon               ( uint32_t * const time_stamp);
-extern time_base_ms_t                                       time_base_ms_myown;
+/* [OSAL old] DRIVER_Layer OS adapters, replaced by osal_freertos_* tables */
+// /*DRIVER_Layer:---<time_base_ms_myown>----*/
+// led_status_t pf_get_time_ms_mywon               ( uint32_t * const time_stamp);
+// extern time_base_ms_t                                       time_base_ms_myown;
 
-/*DRIVER_Layer:---<os_delay_myown>--------*/
-led_status_t pf_os_delay_ms_myown                 ( const uint32_t delay_time);
-extern os_delay_t                                               os_delay_myown;
+// /*DRIVER_Layer:---<os_delay_myown>--------*/
+// led_status_t pf_os_delay_ms_myown                 ( const uint32_t delay_time);
+// extern os_delay_t                                               os_delay_myown;
 
-/* =====self-test :: driver-layer-testing========*/
-void Test_1();
+// /* =====self-test :: driver-layer-testing========*/
+// void Test_1();
 
-/*HANDLER_Layer:---<handler_1_os_delay>---*/
-led_handler_status_t os_delay_ms_hanler_1         ( const uint32_t delay_time);
-extern os_delay_t                                           handler_1_os_delay;
+/* [OSAL old] HANDLER_Layer OS adapters, replaced by osal_freertos_* tables */
+// /*HANDLER_Layer:---<handler_1_os_delay>---*/
+// led_handler_status_t os_delay_ms_hanler_1         ( const uint32_t delay_time);
+// extern os_delay_t                                           handler_1_os_delay;
 
-/*HANDLER_Layer:---<handler1_os_queue>----*/
-led_handler_status_t os_queue_create_handler_1 (
-                                                  uint32_t const     item_num,
-                                                  uint32_t const    item_size,
-                                                  void ** const queue_handler);
-led_handler_status_t os_queue_put_handler_1    (
-                                                  void * const  queue_handler,
-                                                  void * const           item,
-                                                  uint32_t            timeout);
-led_handler_status_t os_queue_get_handler_1    (
-                                                  void * const  queue_handler,
-                                                  void * const            msg,
-                                                  uint32_t            timeout);
-led_handler_status_t os_queue_delete_handler1  ( void * const   queue_handler);
-extern handler_os_queue_t                                    handler1_os_queue;
+// /*HANDLER_Layer:---<handler1_os_queue>----*/
+// led_handler_status_t os_queue_create_handler_1 (
+//                                                   uint32_t const     item_num,
+//                                                   uint32_t const    item_size,
+//                                                   void ** const queue_handler);
+// led_handler_status_t os_queue_put_handler_1    (
+//                                                   void * const  queue_handler,
+//                                                   void * const           item,
+//                                                   uint32_t            timeout);
+// led_handler_status_t os_queue_get_handler_1    (
+//                                                   void * const  queue_handler,
+//                                                   void * const            msg,
+//                                                   uint32_t            timeout);
+// led_handler_status_t os_queue_delete_handler1  ( void * const   queue_handler);
+// extern handler_os_queue_t                                    handler1_os_queue;
 
+// /*HANDLER_Layer:---<handler1_os_critical>-*/
+// led_handler_status_t                        os_critical_enter_handler_1(void );
+// led_handler_status_t                        os_critical_exit_handler_1 (void );
+// extern handler_os_critical_t                              handler1_os_critical;
 
-/*HANDLER_Layer:---<handler1_os_critical>-*/
-led_handler_status_t                        os_critical_enter_handler_1(void );
-led_handler_status_t                        os_critical_exit_handler_1 (void );
-extern handler_os_critical_t                              handler1_os_critical;
+// led_handler_status_t get_time_ms_handler1       ( uint32_t * const p_os_tick );
+// extern handler_time_base_ms_t                               handler1_time_base;
 
-led_handler_status_t get_time_ms_handler1       ( uint32_t * const p_os_tick );
-extern handler_time_base_ms_t                               handler1_time_base;
+// /*HANDLER_Layer:---<handler1_os_thread>---*/
+// led_handler_status_t thread_create_handler1 ( /* thread_create.         */
+//                 void * const                   task_code,/* Defined. Internal*/
+//                 const char * const             task_name,/* Defined. external*/
+//                 const uint32_t               stack_depth,/* Defined. external*/
+//                 void * const                  parameters,/* Defined. Internal*/
+//                 uint32_t                        priority,/* Defined. external*/
+//                 void ** const               task_handler /* Defined. Internal*/
+//                                      );
+// led_handler_status_t thread_delete_handler1 ( void * const queue_handler);
+// extern handler_os_thread_t                            handler1_os_thread ;
 
-/*HANDLER_Layer:---<handler1_os_thread>---*/
-led_handler_status_t thread_create_handler1 ( /* thread_create.         */
-                void * const                   task_code,/* Defined. Internal*/
-                const char * const             task_name,/* Defined. external*/
-                const uint32_t               stack_depth,/* Defined. external*/
-                void * const                  parameters,/* Defined. Internal*/
-                uint32_t                        priority,/* Defined. external*/
-                void ** const               task_handler /* Defined. Internal*/
-                                     );
-led_handler_status_t thread_delete_handler1 ( void * const queue_handler);
-extern handler_os_thread_t                            handler1_os_thread ;            
-
-/* =====self-test :: handler-layer-testing=====*/
-void Test_3();
+// /* =====self-test :: handler-layer-testing=====*/
+// void Test_3();
 
 /**
  * @brief init all the resources.

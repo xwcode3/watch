@@ -1,17 +1,18 @@
-#ifndef __BSP_LED_DRIVER_H__
-#define __BSP_LED_DRIVER_H__
-
+#pragma once
+#ifndef BSP_LED_DRIVER_H
+#define BSP_LED_DRIVER_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "bsp_config.h"
+
+#include "osal.h"
 
 
 #define INITED      1                   /* LED has been initialized */
 #define NOT_INITED  0                   /* LED has not been initialized */
 
-#define OS_SUPPORTING                   /* Enable if OS support is available */
-#define DEBUG                           /* Enable debugging */
-#define DEBUG_OUT(x) printf(x)          /* Outputs debug information */
+
 
 // Forward declare the struct
 typedef struct bsp_led_driver bsp_led_driver_t; 
@@ -45,18 +46,20 @@ typedef struct
     led_status_t (*pf_led_off) (void); /* Turns the LED off                  */
 } led_operations_t;
 
-typedef struct
-{
-    /* Retrieves time in ms */
-    led_status_t (*pf_get_time_ms)  ( uint32_t * const );
-} time_base_ms_t;
+/* [OSAL old] LED-specific time base interface, replaced by osal_time_base_t */
+// typedef struct
+// {
+//     /* Retrieves time in ms */
+//     led_status_t (*pf_get_time_ms)  ( uint32_t * const );
+// } time_base_ms_t;
 
-#ifdef OS_SUPPORTING
-typedef struct {
-    /* OS-specific delay */
-    led_status_t (*pf_os_delay_ms)  ( const   uint32_t );
-} os_delay_t;
-#endif //OS_SUPPORTING
+/* [OSAL old] LED-specific OS delay interface, replaced by osal_delay_t */
+// #ifdef OS_SUPPORTING
+// typedef struct {
+//     /* OS-specific delay */
+//     led_status_t (*pf_os_delay_ms)  ( const   uint32_t );
+// } os_delay_t;
+// #endif //OS_SUPPORTING
 
 
 
@@ -92,9 +95,12 @@ typedef struct bsp_led_driver {
 
     /******************* Interface Pointers **********************************/
     led_operations_t            *p_led_opes_inst; /* LED operation interface */
-    time_base_ms_t               *p_time_base_ms; /* Timebase interface      */
+    // [OSAL old] time_base_ms_t               *p_time_base_ms; /* Timebase interface      */
+    const osal_time_base_t       *p_time_base_ms; /* Timebase interface      */
+
 #ifdef OS_SUPPORTING
-    os_delay_t                  *p_os_time_delay; /* OS delay interface      */
+    // [OSAL old] os_delay_t      *p_os_time_delay; /* OS delay interface      */
+    const osal_delay_t             *p_os_time_delay; /* OS delay interface      */
 #endif //OS_SUPPORTING
 
     /******************* Control API *****************************************/
@@ -120,9 +126,10 @@ led_status_t led_driver_inst (
                                       bsp_led_driver_t * const      self, 
                                       led_operations_t * const   led_ops,
 #ifdef OS_SUPPORTING
-                                      os_delay_t       * const  os_delay,
+                                    const osal_delay_t * const  os_delay,
 #endif //OS_SUPPORTING
-                                      time_base_ms_t   * const time_base     );
+                                      // [OSAL old] time_base_ms_t   * const time_base     );
+                                      const osal_time_base_t * const time_base     );
 
 
 #endif

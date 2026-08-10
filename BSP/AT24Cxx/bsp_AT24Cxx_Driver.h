@@ -1,6 +1,6 @@
-#ifndef WATCH_BSP_AT24CXX_DRIVER_H
-#define WATCH_BSP_AT24CXX_DRIVER_H 
-
+#pragma once
+#ifndef BSP_AT24CXX_DRIVER_H
+#define BSP_AT24CXX_DRIVER_H
 #include <stdio.h>
 #include "stm32f4xx.h"
 #include "iic.h"

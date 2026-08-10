@@ -25,6 +25,9 @@
 
 #include "ota.h"
 
+#include "osal.h"
+#include "osal_freertos.h"
+
 void app_task_create(void);
 
 #endif //WATCH_FREERTOS_TASKS_H

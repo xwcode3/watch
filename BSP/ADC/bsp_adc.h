@@ -1,6 +1,6 @@
-#ifndef _BSP_ADC_H_
-#define _BSP_ADC_H_
-
+#pragma once
+#ifndef BSP_ADC_H
+#define BSP_ADC_H
 #include "stm32f4xx.h"
 #include <stdlib.h>
 #include <string.h>

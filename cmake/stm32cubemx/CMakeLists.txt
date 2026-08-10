@@ -15,6 +15,7 @@ set(MX_Include_Dirs
 	${CMAKE_CURRENT_SOURCE_DIR}/../../APP/OTA
 
 	# BSP
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER
 	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY
@@ -51,7 +52,8 @@ set(MX_Include_Dirs
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/CRC
 
 	# System
-	${CMAKE_CURRENT_SOURCE_DIR}/../../System/
+	${CMAKE_CURRENT_SOURCE_DIR}/../../System
+	${CMAKE_CURRENT_SOURCE_DIR}/../../System/OSAL
 )
 
 # STM32CubeMX generated application sources
@@ -60,19 +62,23 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../APP/OTA/ota.c
 
 	# BSP
-	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
-	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD/bsp_lcd_driver.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC/bsp_adc.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21/bsp_aht21_driver.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21/bsp_aht21_handler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AT24Cxx/bsp_AT24Cxx_Driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY/bsp_key.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led.c
+	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD/bsp_lcd_driver.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led_handler.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC/bsp_adc.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/MPU6050/
+	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/bsp_usart_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/mid_circular_buffer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/usart_parse.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64/bsp_w25qxx_handler.c
-	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AT24Cxx/bsp_AT24Cxx_Driver.c
+	
 
 	# Core
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/main.c
@@ -105,7 +111,9 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/easylogger/port/elog_port.c
 
 	# System
-	${CMAKE_CURRENT_SOURCE_DIR}/../../System/system_adaption.c
+	# ${CMAKE_CURRENT_SOURCE_DIR}/../../System/system_adaption.c
+	# [OSAL old] ${CMAKE_CURRENT_SOURCE_DIR}/../../System/OSAL/osal_freeRTOS.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../System/OSAL/osal_freertos.c
 
 
 )

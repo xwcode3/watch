@@ -4,4 +4,8 @@
 /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:150:6:DMA2_Stream0_IRQHandler	24	static,ignoring_inline_asm
 /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:166:6:adc_and_dma_init	16	static
 /Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:192:6:usart_dma_init	16	static
-/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:210:6:app_task_create	24	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:210:14:led_on_myown	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:216:14:led_off_myown	8	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:228:6:Test_3	152	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:288:6:idle_task	16	static
+/Users/wenwu/CLionProjects/Stm32Cube_Projects/watch_projects/app/Core/Src/FreeRTOS_tasks.c:303:6:app_task_create	24	static

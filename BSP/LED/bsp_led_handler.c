@@ -1,6 +1,18 @@
 #include "bsp_led_handler.h"
 
-
+static led_handler_status_t handler_status_from_osal(osal_status_t status)
+{
+    switch (status)
+    {
+        case OSAL_OK:             return HANDLER_OK;
+        case OSAL_ERRORTIMEOUT:   return HANDLER_ERRORTIMEOUT;
+        case OSAL_ERRORRESOURCE:  return HANDLER_ERRORRESOURCE;
+        case OSAL_ERRORPARAMETER: return HANDLER_ERRORPARAMETER;
+        case OSAL_ERRORNOMEMORY:  return HANDLER_ERRORNOMEMORY;
+        case OSAL_ERRORISR:       return HANDLER_ERRORISR;
+        default:                  return HANDLER_ERROR;
+    }
+}
 
 /**
  * @brief perform the detailed behavior of  the bsp_led_driver_t target.
@@ -71,7 +83,8 @@ led_handler_status_t led_blink_handler( bsp_led_driver_t * self )
             //TBD:5.option - use mutex to protect the critical section
             for(uint32_t j = 0; j < cycle_time_local; j++)
             {
-                self->p_os_time_delay->pf_os_delay_ms(1);
+                // [OSAL old] self->p_os_delay->delay_ms(1);
+                self->p_os_time_delay->delay_ms(1);
                 //TBD:6.option - use mutex to protect the critical section
                 if( j < led_toggle_time )
                 {
@@ -168,6 +181,7 @@ led_handler_status_t __event_process(bsp_led_handler_t * self, led_event_t msg)
         DEBUG_OUT("event processed at __event_process\r\n");
 #endif // DEBUG
 
+    return ret;
 }
 
 
@@ -184,6 +198,58 @@ static led_handler_status_t __array_init(bsp_led_driver_t * array[],
 }
 
 
+#if 1 /* LED 测试代码 */
+
+// [OSAL old] led_handler_status_t handler_thread( void *argument)
+void handler_thread( void *argument)
+{    
+     vTaskDelay(1000);
+#ifdef DEBUG
+        DEBUG_OUT("Start_handler_thread \r\n");
+#endif // DEBUG
+
+    // [OSAL old] led_handler_status_t ret = HANDLER_OK;
+    osal_status_t os_ret = OSAL_OK;
+    // [OSAL old] bsp_led_handler_t   *   p_led_handler;
+    bsp_led_handler_t   *   p_led_handler = (bsp_led_handler_t *)argument;
+    led_event_t                       msg;
+    /*************0.Checing the target statues  ******************************/
+    //1.check if the target has been instantiated
+    /*************1.Checing the input parameters******************************/
+
+    // vTaskDelay(10);
+    if ( NULL != argument )
+    {
+        p_led_handler = argument;
+    }
+    /*************2.Sending event to LED queue********************************/
+
+    for(;;)
+    {
+        DEBUG_OUT("Start_handler_thread 2\r\n");
+        // [OSAL old] ret = p_led_handler->p_os_queue_interface->queue_get(
+        //                                       p_led_handler->queue_handler,
+        //                                                       &msg,
+        //                                                          0);
+        os_ret = p_led_handler->p_os_queue_interface->queue_get(
+                                            p_led_handler->queue_handler,
+                                            &msg,
+                                            OSAL_NO_WAIT);
+        if ( os_ret == OSAL_OK )
+        {
+            DEBUG_OUT("the message received \r\n");
+            /*****3.process the received event *******************************/
+            __event_process(p_led_handler, msg);
+        }
+        // vTaskDelay(1000);
+#ifdef OS_SUPPORTING
+        DEBUG_OUT("handler_thread delay 1s\r\n");
+        p_led_handler->p_os_time_delay->delay_ms(1000);
+#endif // OS_SUPPORTING
+    }
+
+}
+#endif /* LED 测试代码 */
 
 
 led_handler_status_t handler_led_control(
@@ -246,12 +312,17 @@ led_handler_status_t handler_led_control(
      led_event_t let_event = {
         .Cycle_time        =       Cycle_time,
         .blink_times       =       blink_times,
-        .proportion_on_off = proportion_on_off
+        .proportion_on_off = proportion_on_off,
+        .index             =       index
      };
 
-    ret = self->p_os_queue_interface->pf_os_queue_put( self->queue_handler,
-                                                                &let_event,
-                                                                        0);
+    // [OSAL old] ret = self->p_os_queue_interface->queue_put( self->queue_handler,
+    //                                                                   &let_event,
+    //                                                                            0);
+    ret = handler_status_from_osal(
+                self->p_os_queue_interface->queue_put(self->queue_handler,
+                                                      &let_event,
+                                                      OSAL_NO_WAIT));
     
     if( HANDLER_OK != ret )
     {
@@ -329,7 +400,8 @@ led_handler_status_t led_register ( bsp_led_handler_t  * const        self,
 
 
 #ifdef OS_SUPPORTING
-    self->p_os_critical->pf_os_critical_enter();
+    // [OSAL old] self->p_os_critical->pf_os_critical_enter();
+    (void)self->p_os_critical->enter();
 #endif //OS_SUPPORTING
 
     if( (MAX_INSTANCE_NUMBER - self->instances.led_instance_num) > 0  )
@@ -342,7 +414,8 @@ led_handler_status_t led_register ( bsp_led_handler_t  * const        self,
     } 
 
 #ifdef OS_SUPPORTING
-    self->p_os_critical->pf_os_critical_exit();
+    // [OSAL old] self->p_os_critical->pf_os_critical_exit();
+    (void)self->p_os_critical->exit();
 #endif //OS_SUPPORTING
 
     
@@ -424,12 +497,17 @@ static led_status_t led_control   (
 led_handler_status_t led_handler_inst (
                                   bsp_led_handler_t      * const        self, 
 #ifdef OS_SUPPORTING 
-                                  os_delay_t             * const    os_delay,
-                                  handler_os_queue_t     * const    os_queue,
-                                  handler_os_critical_t  * const os_critical,
-                                  handler_os_thread_t    * const   os_thread,
+                                  // [OSAL old] os_delay_t             * const    os_delay,
+                                  const osal_delay_t     * const    os_delay,
+                                  // [OSAL old] handler_os_queue_t     * const    os_queue,
+                                  const osal_queue_t     * const    os_queue,
+                                  // [OSAL old] handler_os_critical_t  * const os_critical,
+                                  const osal_critical_t  * const    os_critical,
+                                  // [OSAL old] handler_os_thread_t    * const   os_thread,
+                                  const osal_thread_t    * const    os_thread,
 #endif //OS_SUPPORTING 
-                                  handler_time_base_ms_t * const  time_base  )
+                                  // [OSAL old] handler_time_base_ms_t * const  time_base  )
+                                  const osal_time_base_t * const  time_base  )
 {
     led_handler_status_t ret = HANDLER_OK;
 #ifdef DEBUG
@@ -484,12 +562,19 @@ led_handler_status_t led_handler_inst (
 
 /*************4.Init the target     **********************/
     //4.1 init the thread
-    ret = self->p_os_thread->pf_os_thread_create      (        handler_thread,
-                                                             "handler_thread",
-                                                                          256,
-                                                                         self,
-                                                                            0,
-                                                        &self->thread_handler);
+    // [OSAL old] ret = self->p_os_thread->pf_os_thread_create      (        handler_thread,
+    //                                                                    "handler_thread",
+    //                                                                                 256,
+    //                                                                                self,
+    //                                                                                   0,
+    //                                                               &self->thread_handler);
+    ret = handler_status_from_osal(
+                self->p_os_thread->create(handler_thread,
+                                          "handler_thread",
+                                          256,
+                                          self,
+                                          1,
+                                          &self->thread_handler));
     if( HANDLER_OK != ret )
     {
 #ifdef DEBUG
@@ -499,15 +584,20 @@ led_handler_status_t led_handler_inst (
     }
 
     //4.2 init the queue that will be used
-    self->p_os_queue_interface->pf_os_queue_create(                  10,
-                                                    sizeof(led_event_t),
-                                                &(self->queue_handler));
+    // [OSAL old] self->p_os_queue_interface->pf_os_queue_create(                  10,
+    //                                                           sizeof(led_event_t),
+    //                                                       &(self->queue_handler));
+    ret = handler_status_from_osal(
+                self->p_os_queue_interface->queue_create(10,
+                                                         sizeof(led_event_t),
+                                                         &(self->queue_handler)));
     if( HANDLER_OK != ret )
     {
 #ifdef DEBUG
         DEBUG_OUT("HANDLER_ERRORNOMEMORY at pf_os_queue_create\r\n");
 #endif // DEBUG
-        self->p_os_thread->pf_os_thread_delete(self->thread_handler);
+        // [OSAL old] self->p_os_thread->pf_os_thread_delete(self->thread_handler);
+        self->p_os_thread->delete(self->thread_handler);
         return ret;
     }
 
@@ -521,8 +611,10 @@ if( HANDLER_OK != ret )
         DEBUG_OUT("HANDLER_ERRORNOMEMORY at __array_init\r\n");
 #endif // DEBUG
 
-        self->p_os_thread->pf_os_thread_delete(self->thread_handler);
-        self->p_os_queue_interface->pf_os_queue_delete(self->queue_handler);
+        // [OSAL old] self->p_os_thread->pf_os_thread_delete(self->thread_handler);
+        self->p_os_thread->delete(self->thread_handler);
+        // [OSAL old] self->p_os_queue_interface->pf_os_queue_delete(self->queue_handler);
+        self->p_os_queue_interface->queue_delete(self->queue_handler);
         return ret;
     }
 

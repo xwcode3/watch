@@ -2,9 +2,9 @@
 // Created by 文武 on 2026/3/26.
 //
 
-#ifndef WATCH_BSP_SPEAKER_DRIVER_H
-#define WATCH_BSP_SPEAKER_DRIVER_H
-
+#pragma once
+#ifndef BSP_SPEAKER_DRIVER_H
+#define BSP_SPEAKER_DRIVER_H
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -43,4 +43,4 @@ int8_t spk_driver_inst (
     spk_system_interface_t *p_spk_system_interface
     );
 
-#endif //WATCH_BSP_SPEAKER_DRIVER_H
+#endif // BSP_SPEAKER_DRIVER_H

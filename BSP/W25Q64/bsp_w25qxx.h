@@ -2,9 +2,9 @@
 // Created by 文武 on 2026/6/27.
 //
 
-#ifndef WATCH_BSP_W25QXX_H
-#define WATCH_BSP_W25QXX_H
-
+#pragma once
+#ifndef BSP_W25QXX_H
+#define BSP_W25QXX_H
 #include "stm32f4xx.h"
 #include "spi.h"
 #include "main.h"
@@ -120,4 +120,4 @@ uint8_t W25Qx_Erase_Chip(void);
 
 uint8_t W25Qx_Get_Parameter(W25Qx_Parameter *Para);
 
-#endif //WATCH_BSP_W25QXX_H
+#endif // BSP_W25QXX_H

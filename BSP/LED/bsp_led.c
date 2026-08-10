@@ -49,8 +49,8 @@ static void led_toggle(void) {
  * @retval led_status_t : led status
  */
 // 控制LED的亮灭，或翻转状态
-led_status_t led_control(led_operation_t operation) {
-    led_status_t led_status = LED_OK;
+old_led_status_t led_control(led_operation_t operation) {
+    old_led_status_t led_status = OLD_LED_OK;
     
     switch (operation) {
         case LED_ON:
@@ -78,7 +78,7 @@ led_status_t led_control(led_operation_t operation) {
             break;
         default:
             printf("led control error: Invalid operation/r/n");
-            led_status = LED_ERROR;
+            led_status = OLD_LED_ERROR;
             break;
     }
 
@@ -112,7 +112,7 @@ TaskHandle_t led_TaskHandle = NULL;    // led线程句柄
  */
 void led_task(void *pvParameters) {
 	led_operation_t* p_led_operation = NULL;
-    led_status_t led_ret = LED_ERROR;
+    old_led_status_t led_ret = OLD_LED_ERROR;
 	uint32_t loop_count = 0;  // for stack monitoring
 	
 	// create a queue
@@ -130,7 +130,7 @@ void led_task(void *pvParameters) {
             if (xQueueReceive(led_queue, &p_led_operation, 0) == pdTRUE) {
                 printf("led_task receive operation: %d\r\n", *p_led_operation);
                 led_ret = led_control(*p_led_operation);
-                if (led_ret != LED_OK) {
+                if (led_ret != OLD_LED_OK) {
                     printf("led_task control failed!\r\n");
                 }
             }
@@ -146,7 +146,7 @@ void led_task(void *pvParameters) {
  * @param  void
  * @retval void
  */
-led_status_t led_off_on_irq(void) {
+old_led_status_t led_off_on_irq(void) {
     // printf("led on off\r\n");
     if (g_blink_times > 0) {
         if (g_blink_order % 2 == 0) {
@@ -160,7 +160,7 @@ led_status_t led_off_on_irq(void) {
         g_blink_order = 0;
     }
 
-    return LED_OK;
+    return OLD_LED_OK;
 }
 
 /**

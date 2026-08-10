@@ -1,6 +1,6 @@
-#ifndef WATCH_BSP_W25QXX_HANDLER_H
-#define WATCH_BSP_W25QXX_HANDLER_H
-
+#pragma once
+#ifndef BSP_W25QXX_HANDLER_H
+#define BSP_W25QXX_HANDLER_H
 #include "stm32f4xx.h"
 #include "bsp_w25qxx.h"
 
@@ -31,4 +31,4 @@ uint8_t W25Q64_ReadData(uint8_t *data, uint16_t *length);
 
 
 
-#endif // WATCH_BSP_W25QXX_HANDLER_H
+#endif // BSP_W25QXX_HANDLER_H

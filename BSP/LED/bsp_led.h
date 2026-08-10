@@ -1,6 +1,6 @@
-#ifndef __BSP_LED_H__
-#define __BSP_LED_H__
-
+#pragma once
+#ifndef BSP_LED_H
+#define BSP_LED_H
 #include "stm32f4xx.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -12,15 +12,15 @@ extern TaskHandle_t led_TaskHandle;    // led线程句柄
 
 // Function return status
 typedef enum {
-  LED_OK                  = 0,                /* Operation completed successfully     */
-  LED_ERROR               = 1,                /* Run-time error without case matched  */
-  LED_ERRORTIMEOUT        = 2,                /* Operation failed with timeout        */
-  LED_ERRORRESOURCE       = 3,                /* Resource not available               */
-  LED_ERRORPARAMETER      = 4,                /* Parameter error                      */
-  LED_ERRORNOMEMORY       = 5,                /* Out of memory                        */
-  LED_ERRORISR            = 6,                /* Not allowed in ISR context           */
-  LED_RESERVED            = 0x7FFFFFFF        /* Reserved                             */
-} led_status_t;
+  OLD_LED_OK                  = 0,                /* Operation completed successfully     */
+  OLD_LED_ERROR               = 1,                /* Run-time error without case matched  */
+  OLD_LED_ERRORTIMEOUT        = 2,                /* Operation failed with timeout        */
+  OLD_LED_ERRORRESOURCE       = 3,                /* Resource not available               */
+  OLD_LED_ERRORPARAMETER      = 4,                /* Parameter error                      */
+  OLD_LED_ERRORNOMEMORY       = 5,                /* Out of memory                        */
+  OLD_LED_ERRORISR            = 6,                /* Not allowed in ISR context           */
+  OLD_LED_RESERVED            = 0x7FFFFFFF        /* Reserved                             */
+} old_led_status_t;
 
 typedef enum {
   LED_OFF             = 0,
@@ -45,14 +45,14 @@ void led_task(void *pvParameters);
  * @param  void
  * @retval void
  */
-led_status_t led_control(led_operation_t operation);
+old_led_status_t led_control(led_operation_t operation);
 
 /**
  * @brief  led control by irq
  * @param  void
  * @retval void
  */
-led_status_t led_off_on_irq(void);
+old_led_status_t led_off_on_irq(void);
 
 // // 点亮LED，输出低电平
 // static void led_on(void);
@@ -74,4 +74,4 @@ led_operation_t get_led_status(void);
 void led_blink_task(void *pvParameters);
 
 
-#endif // __BSP_LED_H__
+#endif // BSP_LED_H

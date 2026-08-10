@@ -71,7 +71,8 @@ led_status_t led_blink( bsp_led_driver_t * self )
             //TBD:5.option - use mutex to protect the critical section
             for(uint32_t j = 0; j < cycle_time_local; j++)
             {
-                self->p_os_time_delay->pf_os_delay_ms(1);
+                // [OSAL old] self->p_os_time_delay->pf_os_delay_ms(1);
+                self->p_os_time_delay->delay_ms(1);
                 //TBD:6.option - use mutex to protect the critical section
                 if( j < led_toggle_time )
                 {
@@ -184,9 +185,10 @@ led_status_t led_driver_init( bsp_led_driver_t * const self)
     }
     
     self->p_led_opes_inst->pf_led_off();
-    self->p_os_time_delay->pf_os_delay_ms(600);
+    self->p_os_time_delay->delay_ms(600);
     uint32_t time_stamp = 0;
-    self->p_time_base_ms->pf_get_time_ms(&time_stamp);
+    // [OSAL old] self->p_time_base_ms->pf_get_time_ms(&time_stamp);
+    self->p_time_base_ms->get_tick_ms(&time_stamp);
 
     return ret;
 }
@@ -214,9 +216,11 @@ led_status_t led_driver_inst (
                                       bsp_led_driver_t * const      self, 
                                       led_operations_t * const   led_ops,
 #ifdef OS_SUPPORTING
-                                      os_delay_t       * const  os_delay,
+                                      // [OSAL old] os_delay_t       * const  os_delay,
+                                      const osal_delay_t * const  os_delay,
 #endif //OS_SUPPORTING
-                                      time_base_ms_t   * const time_base    )
+                                      // [OSAL old] time_base_ms_t   * const time_base    )
+                                      const osal_time_base_t * const time_base    )
 {
     led_status_t ret = LED_OK;
 #ifdef DEBUG

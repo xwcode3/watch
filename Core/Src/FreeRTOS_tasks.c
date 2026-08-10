@@ -207,69 +207,121 @@ void usart_dma_init()
 }
 
 
-#if 1 /* LED 测试代码 */
+led_status_t led_on_myown  (void)
+{
+    printf("led is on\r\n");
+    GPIO_ResetBits(GPIOC, GPIO_Pin_13);
+    return LED_OK;
+}
+led_status_t led_off_myown  (void)
+{
+    printf("led is off\r\n");
+    GPIO_SetBits(GPIOC, GPIO_Pin_13);
+    return LED_OK;
+}
 
-led_handler_status_t handler_thread( void *argument)
-{    
-     vTaskDelay(1000);
-#ifdef DEBUG
-        DEBUG_OUT("Start_handler_thread \r\n");
-#endif // DEBUG
+led_operations_t led_operations_myown = {
+    .pf_led_on  = led_on_myown,
+    .pf_led_off = led_off_myown
+};
 
-    led_handler_status_t ret = HANDLER_OK;
-    bsp_led_handler_t   *   p_led_handler;
-    led_event_t                       msg;
-    /*************0.Checing the target statues  ******************************/
-    //1.check if the target has been instantiated
-    /*************1.Checing the input parameters******************************/
-
-    vTaskDelay(10);
-    if ( NULL != argument )
+void Test_3()
+{
+//系统集成工程师：
+//******************************** Driver Handler ***************************//
+    printf("System Starting.....\r\n");
+    led_handler_status_t ret = HANDLER_OK;   
+    bsp_led_handler_t handler_1;         
+    ret = led_handler_inst ( &handler_1,            //跑在线程3上，Core1
+                            &osal_delay_freertos,
+                            &osal_queue_freertos,
+                            &osal_critical_freertos,
+                            &osal_thread_freertos,
+                            //tbd &
+                            &osal_time_base_freertos
+                            );
+    led_status_t ret1 = LED_OK;
+    bsp_led_driver_t led1;
+    ret1 = led_driver_inst( &led1,
+                            &led_operations_myown,
+                            &osal_delay_freertos,
+                            &osal_time_base_freertos
+                            ); 
+    if (HANDLER_OK == ret )
     {
-        p_led_handler = argument;
+        printf("handler_1 has been instantiated \r\n");
     }
-    /*************2.Sending event to LED queue********************************/
+    // 到这一步时，系统基础的LED handler1 服务线程 和 LED的对象已经构造完毕
 
-    for(;;)
+//APP工程师：
+//******************************** Driver Handler ***************************//
+
+    
+    //APP1 线程1
+    led_index_t handler_1_led_index_1 = LED_NOT_INITIALIZED;
+    ret = handler_1.pf_led_register( &handler_1,    //跑在线程1上，Core1
+                                          &led1,
+                         &handler_1_led_index_1);
+    
+    if (HANDLER_OK == ret )
     {
-        DEBUG_OUT("Start_handler_thread 2\r\n");
-        ret = p_led_handler->p_os_queue_interface->pf_os_queue_get(
-                                                p_led_handler->queue_handler,
-                                                                        &msg,
-                                                                           0);
-        if ( HANDLER_OK  == ret )
-        {
-            DEBUG_OUT("the message received \r\n");
-            /*****3.process the received event *******************************/
-            __event_process(p_led_handler, msg);
-        }
-        vTaskDelay(1000);
+        printf("leds have been registered \r\n");
     }
 
+    //APP1 线程2
+    ret = handler_1.pf_led_countroler(&handler_1,
+                                100U,
+                                1U,
+                                PROPORTIONN_1_2,
+                                handler_1_led_index_1);
+    if (HANDLER_OK == ret )
+    {
+        printf("led1 has been controlled\r\n");
+    }
+
+    // 到这一步时，APP完成调用
+    //UI
+    while(1);
+}
+
+TaskHandle_t idle_task_handle;
+void idle_task(void *pvParameters)
+{
+    Test_3();
+
+    while(1)
+    {
+        vTaskDelay(2000);
+        printf("idle task is running\r\n");
+    }
 }
 
 
 
-#endif /* LED 测试代码 */
-
-
+extern TaskHandle_t led_TaskHandle;
 
 void app_task_create(void)
 {
     // adc_and_dma_init();
 
     BaseType_t task_create_ret = pdFAIL;
-    task_create_ret = xTaskCreate(led_blink_task, "led_blink_task", 128, NULL, 1, &led_TaskHandle);
-    if (task_create_ret != pdPASS)
-    {
-        printf("led_blink_task create failed\r\n");
-    }
+    // task_create_ret = xTaskCreate(led_blink_task, "led_blink_task", 128, NULL, 1, &led_TaskHandle);
+    // if (task_create_ret != pdPASS)
+    // {
+    //     printf("led_blink_task create failed\r\n");
+    // }
 
     extern TaskHandle_t ota_task_handle;
     task_create_ret = xTaskCreate(ota_task, "ota_task", 256, NULL, 2, &ota_task_handle);
     if (task_create_ret != pdPASS)
     {
         printf("ota_task create failed\r\n");
+    }
+
+    task_create_ret = xTaskCreate(idle_task, "idle_task", 256, NULL, 1, &idle_task_handle);
+    if (task_create_ret != pdPASS)
+    {
+        printf("idle_task create failed\r\n");
     }
 
     // usart_dma_init();

@@ -2,9 +2,9 @@
 // Created by 文武 on 2026/6/16.
 //
 
-#ifndef WATCH_USART_PARSE_H
-#define WATCH_USART_PARSE_H
-
+#pragma once
+#ifndef BSP_USART_PARSE_H
+#define BSP_USART_PARSE_H
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -22,4 +22,4 @@
 
 void usart1_parse_task(void * arg);
 
-#endif //WATCH_USART_PARSE_H
+#endif // BSP_USART_PARSE_H

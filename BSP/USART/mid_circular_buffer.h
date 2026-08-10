@@ -2,10 +2,9 @@
 // Created by 文武 on 2026/6/15.
 //
 
-#ifndef WATCH_MID_CIRCULAR_BUFFER_H
-#define WATCH_MID_CIRCULAR_BUFFER_H
-
-
+#pragma once
+#ifndef BSP_MID_CIRCULAR_BUFFER_H
+#define BSP_MID_CIRCULAR_BUFFER_H
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -93,4 +92,4 @@ uint8_t get_head_pos(circular_buffer_t* p_buffer, uint32_t* head_pos);
  * */
 uint8_t head_pos_increment(circular_buffer_t * p_buffer, uint32_t increment_num);
 
-#endif //WATCH_MID_CIRCULAR_BUFFER_H
+#endif // BSP_MID_CIRCULAR_BUFFER_H

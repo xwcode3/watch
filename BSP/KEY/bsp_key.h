@@ -1,6 +1,6 @@
-#ifndef __BSP_KEY_H__
-#define __BSP_KEY_H__
-
+#pragma once
+#ifndef BSP_KEY_H
+#define BSP_KEY_H
 #include "stm32f4xx.h"
 
 #include <stdint.h>
@@ -78,4 +78,4 @@ key_status_t key_polling_scan_short_long_press(key_press_status_t * key_value,
  */
 uint8_t key_scan_bootloader(void);
 
-#endif  // end of __BSP_KEY_H__
+#endif // BSP_KEY_H

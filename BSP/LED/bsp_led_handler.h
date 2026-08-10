@@ -1,11 +1,15 @@
-#ifndef __BSP_LED_HANDLER_H__
-#define __BSP_LED_HANDLER_H__ 
-
+#pragma once
+#ifndef BSP_LED_HANDLER_H
+#define BSP_LED_HANDLER_H
 #include <stdio.h>
 #include <stdint.h>
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 
 #include "bsp_led_driver.h"
+#include "osal.h"
 
 #define OS_SUPPORTING            /* OS_SUPPORTING depends on OS availability */
 // #define DEBUG                    /* Enable DEBUG                             */
@@ -58,65 +62,67 @@ typedef struct {
     led_index_t                     index;  /* LED Operation completed       */
 } led_event_t;
 
+// [OSAL old] module-local OS interface types, replaced by osal.h
 // #TODO: 这里为什么还要 get time base ？在 driver 中已经定义了 time base
-typedef struct
-{
-    led_handler_status_t (*pf_get_time_ms)  ( uint32_t * const );/* LED Op   */
-} handler_time_base_ms_t;
+// 因为 handler 也需要时基函数来进行一些调度工作
+// typedef struct
+// {
+//     led_handler_status_t (*pf_get_time_ms)  ( uint32_t * const );/* LED Op   */
+// } handler_time_base_ms_t;
 
 
-#ifdef OS_SUPPORTING
-typedef struct
-{
-    led_handler_status_t (*pf_os_delay_ms)  ( const   uint32_t );/* LED Op   */
-} handler_os_delay_t;
+// #ifdef OS_SUPPORTING
+// typedef struct
+// {
+//     led_handler_status_t (*pf_os_delay_ms)  ( const   uint32_t );/* LED Op   */
+// } handler_os_delay_t;
 
-typedef struct
-{
-    /* OS queue create */
-    led_handler_status_t (*pf_os_queue_create )  ( 
-                                                  uint32_t const     item_num,
-                                                  uint32_t const    item_size,
-                                                  void ** const queue_handler);
+// typedef struct
+// {
+//     /* OS queue create */
+//     led_handler_status_t (*pf_os_queue_create )  ( 
+//                                                   uint32_t const     item_num,
+//                                                   uint32_t const    item_size,
+//                                                   void ** const queue_handler);
     
-    /* OS queue put */
-    led_handler_status_t (*pf_os_queue_put    )  ( 
-                                                  void * const  queue_handler,
-                                                  void * const           item,
-                                                  uint32_t           timeout );
+//     /* OS queue put */
+//     led_handler_status_t (*pf_os_queue_put    )  ( 
+//                                                   void * const  queue_handler,
+//                                                   void * const           item,
+//                                                   uint32_t           timeout );
     
-    /* OS queue get */                                        
-    led_handler_status_t (*pf_os_queue_get    )  ( 
-                                              void * const      queue_handler,
-                                              void * const                msg,
-                                              uint32_t               timeout );
+//     /* OS queue get */                                        
+//     led_handler_status_t (*pf_os_queue_get    )  ( 
+//                                               void * const      queue_handler,
+//                                               void * const                msg,
+//                                               uint32_t               timeout );
     
-    /* OS queue delete */                                        
-    led_handler_status_t (*pf_os_queue_delete )  ( 
-                                              void * const      queue_handler);
-} handler_os_queue_t;
+//     /* OS queue delete */                                        
+//     led_handler_status_t (*pf_os_queue_delete )  ( 
+//                                               void * const      queue_handler);
+// } handler_os_queue_t;
 
-typedef struct
-{
-    led_handler_status_t (*pf_os_critical_enter) (void );/* Enter critical   */
-    led_handler_status_t (*pf_os_critical_exit ) (void );/* Exit critical    */
-} handler_os_critical_t;
+// typedef struct
+// {
+//     led_handler_status_t (*pf_os_critical_enter) (void );/* Enter critical   */
+//     led_handler_status_t (*pf_os_critical_exit ) (void );/* Exit critical    */
+// } handler_os_critical_t;
 
-typedef struct
-{
-    led_handler_status_t (*pf_os_thread_create ) ( /* Thread create          */
-                void * const                   task_code, /* Defined internal*/
-                const char * const             task_name, /* Defined external*/
-                const uint32_t               stack_depth, /* Defined external*/
-                void * const                  parameters, /* Defined internal*/
-                uint32_t                        priority, /* Defined external*/
-                void ** const               task_handler  /* Defined internal*/
-                                     );
+// typedef struct
+// {
+//     led_handler_status_t (*pf_os_thread_create ) ( /* Thread create          */
+//                 void * const                   task_code, /* Defined internal*/
+//                 const char * const             task_name, /* Defined external*/
+//                 const uint32_t               stack_depth, /* Defined external*/
+//                 void * const                  parameters, /* Defined internal*/
+//                 uint32_t                        priority, /* Defined external*/
+//                 void ** const               task_handler  /* Defined internal*/
+//                                      );
 
-    led_handler_status_t (*pf_os_thread_delete ) (void *);/* Thread delete   */
+//     led_handler_status_t (*pf_os_thread_delete ) (void *);/* Thread delete   */
 
-} handler_os_thread_t;
-#endif //OS_SUPPORTING
+// } handler_os_thread_t;
+// #endif //OS_SUPPORTING
 
 typedef struct bsp_led_handler bsp_led_handler_t;
 
@@ -173,13 +179,19 @@ typedef struct bsp_led_handler
     /**********Interfaces for internal use***********************************/
     /*************Target of IOs needed************/
     /* Interface from Core layer                  */
-    handler_time_base_ms_t         *p_time_base_ms;         /* Core time base interface */
+    // handler_time_base_ms_t         *p_time_base_ms;         /* Core time base interface */
+    // [OSAL old] osal_time_base_t    *p_time_base_ms;         /* Core time base interface */
+    const osal_time_base_t            *p_time_base_ms;         /* Core time base interface */
     /* Interface from OS layer                    */
 #ifdef OS_SUPPORTING
-    os_delay_t                    *p_os_time_delay;         /* OS delay interface */
-    handler_os_queue_t       *p_os_queue_interface;         /* OS queue API interface */
-    handler_os_critical_t           *p_os_critical;          /* OS critical section interface */
-    handler_os_thread_t               *p_os_thread;            /* OS thread API interface */
+    // [OSAL old] osal_delay_t        *p_os_time_delay;         /* OS delay interface */
+    const osal_delay_t                *p_os_time_delay;         /* OS delay interface */
+    // [OSAL old] osal_queue_t        *p_os_queue_interface;    /* OS queue API interface */
+    const osal_queue_t                *p_os_queue_interface;    /* OS queue API interface */
+    // [OSAL old] osal_critical_t     *p_os_critical;           /* OS critical section interface */
+    const osal_critical_t             *p_os_critical;           /* OS critical section interface */
+    // [OSAL old] osal_thread_t       *p_os_thread;             /* OS thread API interface */
+    const osal_thread_t               *p_os_thread;             /* OS thread API interface */
 #endif //OS_SUPPORTING
 
     /**********Interfaces for external use***********************************/
@@ -216,11 +228,16 @@ led_handler_status_t __event_process(bsp_led_handler_t * self, led_event_t msg);
 led_handler_status_t led_handler_inst (
                                   bsp_led_handler_t      * const        self, 
 #ifdef OS_SUPPORTING 
-                                  os_delay_t             * const    os_delay,
-                                  handler_os_queue_t     * const    os_queue,
-                                  handler_os_critical_t  * const os_critical,
-                                  handler_os_thread_t    * const   os_thread,
+                                  // [OSAL old] osal_delay_t    * const    os_delay,
+                                  const osal_delay_t    * const  os_delay,
+                                  // [OSAL old] osal_queue_t     * const    os_queue,
+                                  const osal_queue_t     * const  os_queue,
+                                  // [OSAL old] osal_critical_t  * const os_critical,
+                                  const osal_critical_t  * const  os_critical,
+                                  // [OSAL old] osal_thread_t    * const   os_thread,
+                                  const osal_thread_t    * const  os_thread,
 #endif //OS_SUPPORTING 
-                                  handler_time_base_ms_t * const  time_base  );
+                                  // [OSAL old] osal_time_base_t * const  time_base  );
+                                  const osal_time_base_t * const  time_base  );
 
-#endif  /* End of __BSP_LED_HANDLER_H__ */
+#endif /* BSP_LED_HANDLER_H */
