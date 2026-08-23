@@ -14,7 +14,7 @@
 #define NVIC_VectTab_FLASH          ((uint32_t)0x08000000)
 #define BackupApplicationAddress_boot    0x08020000
 
-
+void app_check(void);
 void JumpToApp1(void);
 // int8_t back_to_app(void);
 int8_t back_to_app(int32_t fl_size);

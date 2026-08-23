@@ -1,4 +1,7 @@
 #include "iic.h"
+#include <stdio.h>
+
+// #define IIC_DEBUG
 
 /*============================================================================*/
 /*          软件 IIC    IIC总线设备操作函数     SCL PB8      SDA PB9        */
@@ -10,6 +13,9 @@
  */
 static void i2c_cfgGpio(void)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_cfgGpio\r\n");
+    #endif
     GPIO_InitTypeDef GPIO_InitStructure;
 
     /* 使能GPIOB时钟 */
@@ -36,6 +42,9 @@ static void i2c_cfgGpio(void)
  */
 static void i2c_Delay(void)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_Delay\r\n");
+    #endif
     uint8_t i;
     /* 经实测, 循环40次大约能满足400kHz的I2C时钟要求 */
     for(i = 0; i < 40; i++);
@@ -44,6 +53,9 @@ static void i2c_Delay(void)
 
 void i2c_Start(void)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_Start\r\n");
+    #endif
     /* 当SCL高电平时，SDA出现一个下跳沿表示I2C总线启动信号 */
     EEPROM_I2C_SCL_1();
     EEPROM_I2C_SDA_1();
@@ -57,6 +69,9 @@ void i2c_Start(void)
 
 void i2c_Stop(void)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_Stop\r\n");
+    #endif
     /* 当SCL高电平时，SDA出现一个上跳沿表示I2C总线停止信号 */
     EEPROM_I2C_SDA_0();
     EEPROM_I2C_SCL_1();
@@ -67,7 +82,10 @@ void i2c_Stop(void)
 
 
 void i2c_Ack(void)
-{ 
+{
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_Ack\r\n");
+    #endif
     EEPROM_I2C_SDA_0();
     i2c_Delay();  
     EEPROM_I2C_SCL_1();
@@ -82,7 +100,10 @@ void i2c_Ack(void)
 
 
 void i2c_NAck(void)
-{ 
+{
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_NAck\r\n");
+    #endif
     EEPROM_I2C_SDA_1();
     i2c_Delay();  
     EEPROM_I2C_SCL_1();
@@ -94,6 +115,9 @@ void i2c_NAck(void)
 
 uint8_t i2c_WaitAck(void)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_WaitAck\r\n");
+    #endif
     uint8_t re;
     
     /* CPU释放SDA总线 */
@@ -124,6 +148,9 @@ uint8_t i2c_WaitAck(void)
 
 void i2c_SendByte(uint8_t _ucByte)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_SendByte\r\n");
+    #endif
     uint8_t i;
     
     /* 先发送字节的高位bit7 */
@@ -157,6 +184,9 @@ void i2c_SendByte(uint8_t _ucByte)
 /* CPU从I2C总线设备读取8bit数据 */
 uint8_t i2c_ReadByte(void)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_ReadByte\r\n");
+    #endif
     uint8_t i;
     uint8_t value;
 
@@ -189,6 +219,9 @@ uint8_t i2c_ReadByte(void)
  */
 uint8_t i2c_CheckDevice(uint8_t _Address)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC i2c_CheckDevice\r\n");
+    #endif
     uint8_t ucAck;
     
     i2c_cfgGpio();  /* 配置GPIO */
@@ -207,35 +240,43 @@ uint8_t i2c_CheckDevice(uint8_t _Address)
 /*============================================================================*/
 /*           硬件 IIC     IIC总线设备操作函数      SCL PB8      SDA PB9          */
 /**
-  * @brief SDA线输入模式配置
+  * @brief SDA线输入模式配置（直接写寄存器，与 HAL_GPIO_Init 逐位等价）
   * @param -[in] iic_bus_t *bus: IIC总线结构体指针
   * @retval None
   */
 void SDA_Input_Mode(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC SDA_Input_Mode\r\n");
+    #endif
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    GPIO_InitStructure.GPIO_Pin = bus->IIC_SDA_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    /* SDA 线：输入 + 上拉 + 高速（标准库 GPIO_Init 写法，对应 HAL GPIO_MODE_INPUT + GPIO_PULLUP） */
+    GPIO_InitStructure.GPIO_Pin   = bus->IIC_SDA_PIN;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN;       /* GPIO_MODE_INPUT */
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;       /* GPIO_PULLUP */
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;   /* GPIO_SPEED_FREQ_HIGH（F4: OSPEEDR=2 → 50MHz） */
     GPIO_Init(bus->IIC_SDA_PORT, &GPIO_InitStructure);
 }
 
 /**
-  * @brief SDA线输出模式配置
+  * @brief SDA线输出模式配置（开漏 + 无上拉，与 13_AHT21 一致）
   * @param -[in] iic_bus_t *bus: IIC总线结构体指针
   * @retval None
   */
 void SDA_Output_Mode(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC SDA_Output_Mode\r\n");
+    #endif
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    GPIO_InitStructure.GPIO_Pin = bus->IIC_SDA_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;  // 开漏输出
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    /* SDA 线：输出 + 开漏 + 无上拉（标准库 GPIO_Init 写法，对应 HAL GPIO_MODE_OUTPUT_OD + GPIO_NOPULL） */
+    GPIO_InitStructure.GPIO_Pin   = bus->IIC_SDA_PIN;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;        /* GPIO_MODE_OUTPUT_OD 的输出方向 */
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;        /* 开漏 */
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;     /* GPIO_NOPULL */
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;     /* GPIO_SPEED_FREQ_HIGH */
     GPIO_Init(bus->IIC_SDA_PORT, &GPIO_InitStructure);
 }
 
@@ -247,6 +288,9 @@ void SDA_Output_Mode(iic_bus_t *bus)
   */
 void SDA_Output(iic_bus_t *bus, uint16_t val)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC SDA_Output\r\n");
+    #endif
     if ( val )
     {
         GPIO_SetBits(bus->IIC_SDA_PORT, bus->IIC_SDA_PIN);
@@ -265,6 +309,9 @@ void SDA_Output(iic_bus_t *bus, uint16_t val)
   */
 void SCL_Output(iic_bus_t *bus, uint16_t val)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC SCL_Output\r\n");
+    #endif
     if ( val )
     {
         GPIO_SetBits(bus->IIC_SCL_PORT, bus->IIC_SCL_PIN);
@@ -282,6 +329,9 @@ void SCL_Output(iic_bus_t *bus, uint16_t val)
   */
 uint8_t SDA_Input(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC SDA_Input\r\n");
+    #endif
     if(GPIO_ReadInputDataBit(bus->IIC_SDA_PORT, bus->IIC_SDA_PIN) == Bit_SET){
         return 1;
     }else{
@@ -296,6 +346,9 @@ uint8_t SDA_Input(iic_bus_t *bus)
   */
 void IICStart(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICStart\r\n");
+    #endif
     SDA_Output(bus,1);
     delay_us(2);
     SCL_Output(bus,1);
@@ -314,6 +367,9 @@ void IICStart(iic_bus_t *bus)
   */
 void IICStop(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICStop\r\n");
+    #endif
     SCL_Output(bus,0);
     delay_us(2);
     SDA_Output(bus,0);
@@ -327,10 +383,13 @@ void IICStop(iic_bus_t *bus)
 /**
   * @brief IIC等待确认信号
   * @param -[in] iic_bus_t *bus: IIC总线结构体指针
-  * @retval unsigned char: 0表示失败，1表示成功
+  * @retval uint8_t: 0表示失败，1表示成功
   */
-unsigned char IICWaitAck(iic_bus_t *bus)
+uint8_t IICWaitAck(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICWaitAck\r\n");
+    #endif
     unsigned short cErrTime = 5;
     SDA_Input_Mode(bus);
     SCL_Output(bus,1);
@@ -342,12 +401,15 @@ unsigned char IICWaitAck(iic_bus_t *bus)
         {
             SDA_Output_Mode(bus);
             IICStop(bus);
+
+            // printf("IICWaitAck error\r\n");
             return 0;
         }
     }
-    SDA_Output_Mode(bus);
     SCL_Output(bus,0);
     delay_us(2);
+    SDA_Output_Mode(bus);
+    // printf("IICWaitAck ok\r\n");
     return 1;
 }
 
@@ -358,6 +420,9 @@ unsigned char IICWaitAck(iic_bus_t *bus)
   */
 void IICSendAck(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICSendAck\r\n");
+    #endif
     SDA_Output(bus,0);
     delay_us(1);
     SCL_Output(bus,1);
@@ -374,6 +439,9 @@ void IICSendAck(iic_bus_t *bus)
   */
 void IICSendNotAck(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICSendNotAck\r\n");
+    #endif
     SDA_Output(bus,1);
     delay_us(1);
     SCL_Output(bus,1);
@@ -391,6 +459,9 @@ void IICSendNotAck(iic_bus_t *bus)
   */
 void IICSendByte(iic_bus_t *bus, unsigned char cSendByte)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICSendByte\r\n");
+    #endif
     unsigned char i = 8;
     while (i--)
     {
@@ -398,7 +469,8 @@ void IICSendByte(iic_bus_t *bus, unsigned char cSendByte)
         delay_us(2);
         SDA_Output(bus, cSendByte & 0x80);
         delay_us(1);
-        cSendByte <<= 1;  // 修正：左移一位
+        // cSendByte <<= 1;  // 修正：左移一位
+        cSendByte += cSendByte;
         delay_us(1);
         SCL_Output(bus,1);
         delay_us(1);
@@ -412,26 +484,28 @@ void IICSendByte(iic_bus_t *bus, unsigned char cSendByte)
   * @param -[in] iic_bus_t *bus: IIC总线结构体指针
   * @retval unsigned char: 接收到的字节
   */
-unsigned char IICReceiveByte(iic_bus_t *bus)
+void IICReceiveByte(iic_bus_t *bus, unsigned char *receiveByte)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICReceiveByte\r\n");
+    #endif
     unsigned char i = 8;
     unsigned char cR_Byte = 0;
     SDA_Input_Mode(bus);
     while (i--)
     {
-        cR_Byte <<= 1;  // 修正：先左移再接收
+        // cR_Byte <<= 1;  // 修正：先左移再接收
+        cR_Byte += cR_Byte;
         SCL_Output(bus,0);
         delay_us(2);
         SCL_Output(bus,1);
         delay_us(1);
-        if(SDA_Input(bus))
-        {
-            cR_Byte |= 0x01;
-        }
+        cR_Byte |=  SDA_Input(bus);
     }
     SCL_Output(bus,0);
     SDA_Output_Mode(bus);
-    return cR_Byte;
+    *receiveByte = cR_Byte;
+    return;
 }
 
 
@@ -445,6 +519,9 @@ unsigned char IICReceiveByte(iic_bus_t *bus)
   */
 uint8_t IIC_Write_One_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t data)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IIC_Write_One_Byte\r\n");
+    #endif
     IICStart(bus);
     
     IICSendByte(bus, daddr<<1);
@@ -473,6 +550,9 @@ uint8_t IIC_Write_One_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t d
   */
 uint8_t IIC_Write_Multi_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t length, uint8_t buff[])
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IIC_Write_Multi_Byte\r\n");
+    #endif
     unsigned char i;
     IICStart(bus);
     
@@ -499,10 +579,14 @@ uint8_t IIC_Write_Multi_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t
   * @param -[in] iic_bus_t *bus: IIC总线结构体指针
   * @param -[in] uint8_t daddr: 设备地址
   * @param -[in] uint8_t reg: 寄存器地址
-  * @retval unsigned char: 读取到的数据
+  * @param -[out] unsigned char *data: 存储读取到的数据
+  * @retval uint8_t: 0表示成功，1表示失败
   */
-unsigned char IIC_Read_One_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg)
+uint8_t IIC_Read_One_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, unsigned char *data)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IIC_Read_One_Byte\r\n");
+    #endif
     unsigned char dat;
     IICStart(bus);
     IICSendByte(bus, daddr<<1);
@@ -513,10 +597,11 @@ unsigned char IIC_Read_One_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg)
     IICStart(bus);
     IICSendByte(bus, (daddr<<1)+1);
     IICWaitAck(bus);
-    dat = IICReceiveByte(bus);
+    IICReceiveByte(bus, &dat);
     IICSendNotAck(bus);
     IICStop(bus);
-    return dat;
+    *data = dat;
+    return 0;
 }
 
 /**
@@ -530,6 +615,9 @@ unsigned char IIC_Read_One_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg)
   */
 uint8_t IIC_Read_Multi_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t length, uint8_t buff[])
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IIC_Read_Multi_Byte\r\n");
+    #endif
     unsigned char i;
     IICStart(bus);
     IICSendByte(bus, daddr<<1);
@@ -546,7 +634,7 @@ uint8_t IIC_Read_Multi_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t 
     IICWaitAck(bus);
     for(i=0; i<length; i++)
     {
-        buff[i] = IICReceiveByte(bus);
+        IICReceiveByte(bus, &buff[i]);
         if(i < length-1)
         {
             IICSendAck(bus);
@@ -564,28 +652,58 @@ uint8_t IIC_Read_Multi_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t 
   */
 void IICInit(iic_bus_t *bus)
 {
+    #ifdef IIC_DEBUG
+    printf("IIC IICInit\r\n");
+    #endif
     GPIO_InitTypeDef GPIO_InitStructure;
-    
-    // 使能时钟（如果需要，可以在外部调用）
-    // RCC_APB2PeriphClockCmd(bus->RCC_APB2Periph, ENABLE);
-    
-    // SDA线配置
-    GPIO_InitStructure.GPIO_Pin = bus->IIC_SDA_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;  // 开漏输出
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+    /* 时钟使能：iic_bus_t 没有 CLK_ENABLE 回调成员，沿用工程现有约定由调用方负责
+       若 SDA/SCL 都在 GPIOB，调用方需先执行：
+       RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);  */
+
+    /* SDA：推挽输出 + 上拉 + 高速（标准库 GPIO_Init 写法，对应 HAL GPIO_MODE_OUTPUT_PP + GPIO_PULLUP） */
+    GPIO_InitStructure.GPIO_Pin   = bus->IIC_SDA_PIN;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;        /* GPIO_MODE_OUTPUT_PP 的输出方向 */
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;        /* 推挽 */
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;         /* GPIO_PULLUP */
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;     /* GPIO_SPEED_FREQ_HIGH */
     GPIO_Init(bus->IIC_SDA_PORT, &GPIO_InitStructure);
-    
-    // SCL线配置
+
+    /* SCL：推挽输出 + 上拉 + 高速（与 SDA 同一份配置，仅换引脚/端口） */
     GPIO_InitStructure.GPIO_Pin = bus->IIC_SCL_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;  // 推挽输出
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
     GPIO_Init(bus->IIC_SCL_PORT, &GPIO_InitStructure);
-    
-    // 初始状态：都置高
-    GPIO_SetBits(bus->IIC_SDA_PORT, bus->IIC_SDA_PIN);
-    GPIO_SetBits(bus->IIC_SCL_PORT, bus->IIC_SCL_PIN);
+}
+
+
+/**
+  * @brief IIC反初始化（释放GPIO，停止驱动总线）
+  * @param iic_bus_t *bus: IIC总线结构体指针
+  * @retval None
+  */
+void IICDeinit(iic_bus_t *bus) {
+    #ifdef IIC_DEBUG
+    printf("IIC IICDeinit\r\n");
+    #endif
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    if (bus == NULL)
+    {
+        return;
+    }
+
+    /* 将 SDA / SCL 配置为输入、无上下拉，释放 MCU 对总线的驱动。
+       外部上拉电阻会将其拉回 I2C 空闲态（高电平）。
+       注意：不关闭 GPIOB 时钟——其他外设（如 EEPROM 用的 i2c_*）可能仍在使用 GPIOB。 */
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+    /* SDA 线 */
+    GPIO_InitStructure.GPIO_Pin = bus->IIC_SDA_PIN;
+    GPIO_Init(bus->IIC_SDA_PORT, &GPIO_InitStructure);
+
+    /* SCL 线 */
+    GPIO_InitStructure.GPIO_Pin = bus->IIC_SCL_PIN;
+    GPIO_Init(bus->IIC_SCL_PORT, &GPIO_InitStructure);
 }

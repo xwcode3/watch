@@ -16,6 +16,7 @@ set(MX_Include_Dirs
 
 	# BSP
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER
 	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY
@@ -63,8 +64,8 @@ set(MX_Application_Src
 
 	# BSP
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC/bsp_adc.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21/bsp_aht21_driver.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21/bsp_aht21_handler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21/bsp_aht21_driver.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AHT21/bsp_aht21_handler.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/AT24Cxx/bsp_AT24Cxx_Driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY/bsp_key.c
 	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD/bsp_lcd_driver.c
@@ -92,6 +93,7 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/flash.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/boot_manager.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/iic.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/aht21_test.c
 
 	# Middlewares
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/AES/AES.c

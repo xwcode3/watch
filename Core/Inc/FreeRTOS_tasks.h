@@ -15,6 +15,8 @@
 #include "queue.h"
 #include "semphr.h"
 
+#include "bsp_aht21_driver.h"
+#include "bsp_aht21_handler.h"
 #include "bsp_key.h"
 #include "bsp_led.h"
 #include "bsp_led_driver.h"
@@ -24,7 +26,7 @@
 #include "usart_parse.h"
 
 #include "ota.h"
-
+#include "iic.h"
 #include "osal.h"
 #include "osal_freertos.h"
 

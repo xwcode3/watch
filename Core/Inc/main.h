@@ -37,6 +37,9 @@
 #include "gpio.h"
 #include "spi.h"
 #include "iic.h"
+#include "timer.h"
+#include "aht21_test.h"
+#include "boot_manager.h"
 
 // #include "bsp_adc.h"
 #include "bsp_led.h"

@@ -3,6 +3,38 @@
 
 typedef void (*pFunction)(void);
 
+
+/**
+ * @brief  app check
+ * @param  void
+ * @retval void
+ */
+void app_check(void) {
+    // 上电检查 ota 状态
+    ota_state e_ota_state = OTA_STATE_APP_NEED_UPDATE;
+    ee_ReadBytes(&e_ota_state, 0x00, 1);
+    printf("app read e_ota_state = 0x%02x\r\n", e_ota_state);
+
+    if (OTA_STATE_APP_FIRST_CHECKING == e_ota_state) {
+        e_ota_state = OTA_STATE_NO_APP_UPDATE;
+        ee_WriteBytes(&e_ota_state, 0x00, 1);
+        printf("e_ota_state = 0x44, app waiting for reset...\r\n");
+        
+        // 等待 Bootloader 设置的看门狗主动复位
+        while (1) {
+
+        }
+
+    } else if (OTA_STATE_NO_APP_UPDATE != e_ota_state) {
+        printf("app error, waiting for reset...\r\n");
+        SoftReset();  // 执行主动复位
+    }
+
+    printf("app check ok, start create tasks...\r\n");
+}
+
+
+
 /**
  * @brief  juump to application
  * @param  void

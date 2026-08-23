@@ -3,6 +3,7 @@
 //
 
 #include "FreeRTOS_tasks.h"
+#include "bsp_aht21_driver.h"
 
 
 
@@ -298,6 +299,75 @@ void idle_task(void *pvParameters)
 
 
 
+#if 1   // temp_humi_thread
+
+iic_bus_t iic_bus_aht21 = {
+    .IIC_SCL_PIN = GPIO_Pin_14,
+    .IIC_SCL_PORT = GPIOB,
+    .IIC_SDA_PIN = GPIO_Pin_13,
+    .IIC_SDA_PORT = GPIOB,
+};
+
+
+iic_driver_interface_t iic_driver_interface = {
+    .iic_bus = &iic_bus_aht21,
+    .pf_iic_init = IICInit,
+    .pf_iic_deinit = IICDeinit,
+    .pf_iic_start = IICStart,
+    .pf_iic_stop = IICStop,
+    .pf_iic_send_byte = IICSendByte,
+    .pf_iic_receive_byte = IICReceiveByte,
+    .pf_iic_wait_ack = IICWaitAck,
+    .pf_iic_send_ack = IICSendAck,
+    .pf_iic_send_no_ack = IICSendNotAck,
+    .pf_critical_interface = &osal_critical_freertos,
+};
+temp_humi_handler_all_input_arg_t temp_humi_input_arg ={
+    .iic_driver_interface = &iic_driver_interface,
+    .timebase_interface = &osal_time_base_freertos,
+    .os_queue_interface = &osal_queue_freertos,
+    .os_delay_interface = &osal_delay_freertos,
+    .pf_callback = NULL,   // 这里可以设置一个回调函数，用于处理温湿度数据
+};
+
+bsp_aht21_driver_t aht21_ins = {
+    .p_iic_driver_instance = &iic_driver_interface,    
+};
+
+
+
+#endif 
+
+
+extern QueueHandle_t temp_humi_queue;
+void send_temp_humi_event(void *pvParameters)
+{
+    temp_humi_event_t event = {
+        // .humidity
+        .lifetime = 1000,
+        // .temperature
+        // .timestamp
+        .type = TEMP_HUMI_EVENT_BOTH,
+        .pf_callback = NULL,
+    };
+
+    vTaskDelay(1000); // 等待队列创建完成
+
+    while (1)
+    {
+
+        bsp_temp_humi_read(&event);
+        // aht21_read_data(&aht21_ins, event.temperature, event.humidity);
+
+        // printf("temp: %f, humi: %f\r\n", event.temperature, event.humidity);
+
+        // while (1);
+
+        vTaskDelay(1000); // 每秒发送一次事件
+    }
+}
+
+
 extern TaskHandle_t led_TaskHandle;
 
 void app_task_create(void)
@@ -318,10 +388,20 @@ void app_task_create(void)
         printf("ota_task create failed\r\n");
     }
 
-    task_create_ret = xTaskCreate(idle_task, "idle_task", 256, NULL, 1, &idle_task_handle);
-    if (task_create_ret != pdPASS)
-    {
-        printf("idle_task create failed\r\n");
+    // task_create_ret = xTaskCreate(idle_task, "idle_task", 256, NULL, 1, &idle_task_handle);
+    // if (task_create_ret != pdPASS)
+    // {
+    //     printf("idle_task create failed\r\n");
+    // }
+
+    task_create_ret = xTaskCreate(temp_humi_handler_thread, "temp_humi_task", 256, &temp_humi_input_arg, 3, NULL);
+    if (task_create_ret != pdPASS) {
+        printf("temp_humi_task create failed\r\n");
+    }
+
+    task_create_ret = xTaskCreate(send_temp_humi_event, "send_task", 256, NULL, 1, NULL);
+    if (task_create_ret != pdPASS) {
+        printf("send_task create failed\r\n");
     }
 
     // usart_dma_init();

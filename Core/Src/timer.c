@@ -4,8 +4,8 @@
 #include "timer.h"
 
 /**
- * @brief  微秒级延时
- * @param  us: 延时微秒数，范围0-4294967295
+ * @brief  微秒级延时（TIM2 定时器实现）
+ * @param  us: 延时微秒数
  * @retval 无
  */
 void delay_us(uint32_t us) {
