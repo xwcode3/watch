@@ -18,6 +18,8 @@ OTA 链路：App(`ota_task`) 用 Ymodem 把密文固件收进 W25Q64 外部 Flas
 
 ## 文档产出
 - `docs/架构与调用逻辑说明.md`、`docs/嵌入式面试准备_3年经验.md`
+- `docs/FreeRTOS_零基础循序渐进指南.md`（2026-09-09 整合 5 份 FreeRTOS 资料重编：
+  基础四件 任务/队列/信号量/互斥量 → 进阶三组件 通知/事件组/软定时器 → 实战 选型/中断/栈堆/配置/排错/实验）
 
 ## BSP 桥接驱动命名约定（建议，待与 owner 确认后落地）
 - **已统一**：头文件 guard = `BSP_<模块>_H` + `#pragma once`；挂载函数指针统一 `pf_` 前缀；设备实例类型 `bsp_<模块>_t`。
@@ -30,3 +32,9 @@ OTA 链路：App(`ota_task`) 用 Ymodem 把密文固件收进 W25Q64 外部 Flas
      当前 handler 仍直接持有 `bsp_aht21_driver_t*`，需做这步解耦才算真正可换芯。
   ③ 返回值统一一套（建议复用 `osal_status_t`，0=OK），别让每个模块各造 status 枚举，尤其 RESERVED 哨兵值不要混用 0xFF / 0x7FFFFFFF。
 - **注意真 bug**：AHT21 `pf_read_id` typedef `(void* const)` 与实现 `aht21_read_id(uint8_t*)` 签名不符，强转掩盖，调用会传错参。
+
+## AHT21 温湿度桥接驱动 · 现状（2026-08-24 剖析，详见 docs/AHT21_温湿度线程逻辑与设计剖析.md）
+- 已跑通：生产者 `send_temp_humi_event`(prio1, 每1s) → `bsp_temp_humi_read` → 队列；消费者 `temp_humi_handler_thread`(prio3) 阻塞 `queue_get` → `get_temp_humi`(lifetime==1000ms 节流) → `pf_read_data`→`aht21_read_data` 走软件I2C(IIC*, PB13/SDA、PB14/SCL) 读6字节解码。桥接模式落地正确。
+- **当前"能读到但没用好"**：`temp_humi_input_arg.pf_callback=NULL` + `event.pf_callback=NULL` → 温湿度只 `log_i` 打印，无真实消费者；要用数据须挂回调。
+- **待修实坑（按严重度）**：① `pf_read_temperature`/`pf_read_humidity` 在 `aht21_instantiate` 未挂载(NULL)，单模式会空指针崩；② `check_crc8` 定义未调用，无CRC校验；③ 测量等待用 `timer.c` 的 `delay_ms` 忙等，未走传入的 `osal_delay_t`（OSAL delay 接口泄漏）；④ 临界区 `pf_critical_interface->enter/exit` 在 driver 内全被注释(TEMP-EXP)；⑤ `g_inited`/`g_device_id` 全局单例，非 per-instance；⑥ `aht21_init` 里 `(read_status() && 0x08)!=0x08` 是 `&`/`&&` 优先级 bug（功能无害但语义错）；⑦ `aht21_read_data` 的 `IS_INITED` 检查被注释。
+- **下一步最有价值重构**：把 Handler 从持有 `bsp_aht21_driver_t*` 收敛为设备无关 `const temp_humi_ops_t *ops + void *dev`（不透明上下文），实现"换芯不改 Handler"。

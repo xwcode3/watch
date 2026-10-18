@@ -9,10 +9,12 @@ void gpio_init() {
     // 这与 FreeRTOS 的配置兼容
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     
-    led_init();  // 启用 LED 初始化
-    // key_init();
+    // led_init();  // 启用 LED 初始化
+    key_init();
     // timer_2_init();
     // timer_5_init();
+
+    mpu_int_init();  // MPU6050 中断 gpio 初始化
 }
 
 
@@ -67,5 +69,36 @@ void key_init(void) {
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
+    
 }
+
+
+void mpu_int_init(void) {
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);  /* 映射 PBx->EXTIx 必备 */
+
+    GPIO_InitTypeDef g = {0};
+    g.GPIO_Pin  = GPIO_Pin_5;
+    g.GPIO_Mode = GPIO_Mode_IN;
+    g.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_Init(GPIOB, &g);
+
+    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource5);   /* PB5 -> EXTI5 */
+
+    EXTI_InitTypeDef e = {0};
+    e.EXTI_Line    = EXTI_Line5;
+    e.EXTI_Mode    = EXTI_Mode_Interrupt;
+    e.EXTI_Trigger = EXTI_Trigger_Falling;
+    e.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&e);
+
+    NVIC_InitTypeDef n = {0};
+    n.NVIC_IRQChannel = EXTI9_5_IRQn;
+    n.NVIC_IRQChannelPreemptionPriority = 5;
+    n.NVIC_IRQChannelSubPriority        = 0;
+    n.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&n);
+}
+
+
 

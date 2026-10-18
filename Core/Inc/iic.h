@@ -77,7 +77,7 @@ uint8_t i2c_CheckDevice(uint8_t _Address);
 
 
 /*============================================================================*/
-/*                              硬件    IIC                                    */
+/*                           软件    IIC  -2                                  */
 typedef struct
 {
 	GPIO_TypeDef * IIC_SDA_PORT;
@@ -101,5 +101,64 @@ uint8_t IIC_Write_One_Byte(iic_bus_t *bus, uint8_t daddr,uint8_t reg,uint8_t dat
 uint8_t IIC_Write_Multi_Byte(iic_bus_t *bus, uint8_t daddr,uint8_t reg,uint8_t length,uint8_t buff[]);
 uint8_t IIC_Read_One_Byte(iic_bus_t *bus, uint8_t daddr,uint8_t reg, unsigned char *data);
 uint8_t IIC_Read_Multi_Byte(iic_bus_t *bus, uint8_t daddr, uint8_t reg, uint8_t length, uint8_t buff[]);
+
+
+/**
+  * @brief  以标准库方式完成 I2C2 的 GPIO 与时钟初始化
+  * @retval None
+  */
+void I2C2_GPIO_Init(void);
+
+
+/**
+  * @brief  释放 PB10 / PB3，回到模拟输入（高阻）状态
+  * @note   刻意不调用 GPIO_DeInit(GPIOB)：那是复位整个 GPIOB 端口，
+  *         会连带清掉 PB5 上的 MPU6050 INT 外部中断配置。
+  * @retval None
+  */
+void I2C2_GPIO_DeInit(void);
+
+
+/* MPU6050 的 7 位地址（ADO 引脚接地时）。ADO 接高电平则为 0x69 */
+#define MPU_ADDR_7BIT           0x68
+
+/**
+ * SPL 的 I2C_Send7bitAddress() 只负责清/置 bit0，不做左移。
+ * 所以必须传「已左移 1 位」的 8 位形式，否则总线上发出的是错误地址。
+ *     0x68 << 1 = 0xD0
+ */
+#define MPU_ADDR_8BIT           (MPU_ADDR_7BIT << 1)
+
+void hardware_iic_init(void);
+
+void hardware_iic_deinit(void);
+
+int8_t mpu_write_reg(uint8_t reg, const uint8_t *buf, uint16_t len);
+
+uint8_t mpu_read_reg(uint8_t reg, uint8_t *buf, uint16_t len);
+
+int8_t iic_mem_read(void *hi2c,
+                             uint16_t dst_address,
+                             uint16_t mem_addr,
+                             uint16_t mem_size,
+                             uint8_t  *p_data,
+                             uint16_t size,
+                             uint32_t timeout);
+
+int8_t iic_mem_write(void *hi2c,
+                              uint16_t dst_address,
+                              uint16_t mem_addr,
+                              uint16_t mem_size,
+                              uint8_t  *p_data,
+                              uint16_t size,
+                              uint32_t timeout);
+                              
+                              
+int8_t iic_mem_read_dma(void *hi2c,
+                                 uint16_t dst_address,
+                                 uint16_t mem_addr,
+                                 uint16_t mem_size,
+                                 uint8_t  *p_data,
+                                 uint16_t size);                           
 
 #endif //WATCH_IIC_H

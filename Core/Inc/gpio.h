@@ -12,5 +12,7 @@ void gpio_init(void);
 void led_init(void);
 void key_init(void);
 
+void mpu_int_init(void); // 初始化MPU6050中断
+
 
 #endif //WATCH_GPIO_H

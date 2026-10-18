@@ -25,6 +25,10 @@
 #include "bsp_usart_driver.h"
 #include "usart_parse.h"
 
+#include "bsp_mpu6050_driver.h"
+#include "bsp_mpu6050_handler.h"
+#include "bsp_circular_buffer.h"
+
 #include "ota.h"
 #include "iic.h"
 #include "osal.h"

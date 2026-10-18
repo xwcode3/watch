@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MPU6050 桥接模式驱动 · 设计文档 · STM32F411CEU6 + FreeRTOS + SPL</title>
+<style>
+:root{--paper:#f5f5f2;--card:#fff;--ink:#1b222b;--navy:#16324f;--deep:#0d2438;--steel:#47637f;--muted:#77808c;--hair:#dbe0e6;--accent:#c05a31;--wash:#eaeff4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,"Helvetica Neue","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:15px;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1020px;margin:0 auto;padding:0 28px 70px;}
+header.mast{padding:56px 0 34px;border-bottom:3px double var(--navy);}
+.kicker{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:16px;}
+h1{font-size:34px;line-height:1.3;font-weight:800;color:var(--deep);}
+.standfirst{margin-top:14px;font-size:15.5px;color:#3d4652;max-width:52em;}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px;}
+.chip{background:var(--card);border:1px solid var(--hair);border-radius:3px;padding:6px 12px;font-size:12.5px;color:var(--steel);}
+.chip b{color:var(--navy);}
+section{padding-top:44px;}
+.sh{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--ink);padding-bottom:8px;margin-bottom:6px;}
+.secno{font-family:Georgia,serif;font-style:italic;font-size:14px;color:var(--accent);font-weight:700;}
+h2{font-size:21px;font-weight:800;color:var(--deep);}
+.ssub{color:var(--muted);font-size:13px;margin:4px 0 16px;}
+h3{font-size:16px;color:var(--navy);margin:24px 0 10px;font-weight:750;display:flex;gap:8px;align-items:center;}
+h3::before{content:"";width:7px;height:7px;background:var(--accent);transform:rotate(45deg);display:inline-block;flex:none;}
+p+p{margin-top:10px;}
+.note{background:var(--wash);border-left:3px solid var(--steel);padding:12px 16px;font-size:13.5px;color:#33414f;border-radius:0 3px 3px 0;margin:14px 0;}
+.warn{background:#fdf0e9;border-left:3px solid var(--accent);}
+code{background:#eef1f4;border:1px solid #e2e7ec;border-radius:3px;padding:0 5px;font-size:13px;font-family:"SF Mono",Menlo,Consolas,monospace;color:#27405c;}
+pre{background:var(--deep);color:#dce6ef;border-radius:5px;padding:16px 18px;font-size:12.5px;line-height:1.6;overflow-x:auto;font-family:"SF Mono",Menlo,Consolas,monospace;margin:12px 0;}
+pre code{background:none;border:none;color:inherit;padding:0;}
+table.rt{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);margin:12px 0 4px;}
+.rt th{background:var(--deep);color:#fff;text-align:left;padding:8px 11px;font-weight:650;font-size:12px;letter-spacing:.03em;}
+.rt td{padding:8px 11px;border-bottom:1px solid var(--hair);vertical-align:top;}
+.rt tr:nth-child(even) td{background:#fafbf9;}
+.sm{font-size:12px;color:var(--muted);}
+figure{margin:18px 0;}
+figure img{width:100%;border:1px solid var(--hair);border-radius:5px;display:block;}
+figcaption{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:2px;}
+.b-ok{background:#e7efe6;color:#3d6b35;}
+.b-wa{background:#fdf0e9;color:#a4561f;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+.card{background:var(--card);border:1px solid var(--hair);border-radius:4px;padding:14px 16px;font-size:13.5px;}
+.card h4{font-size:12.5px;color:var(--accent);letter-spacing:.08em;margin-bottom:6px;}
+.card ul{padding-left:18px;}
+.card li{margin:3px 0;}
+.steps{counter-reset:s;margin:14px 0;}
+.step{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed #e8ecef;}
+.step .n{counter-increment:s;flex:none;width:30px;height:30px;border-radius:3px;background:var(--navy);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.step .n::before{content:counter(s);}
+.step .t{font-size:13.5px;}
+.step .t b{color:var(--deep);}
+footer{margin-top:56px;padding-top:18px;border-top:3px double var(--navy);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+@media print{body{background:#fff;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="kicker">Embedded Driver Design Document · 2026-08-28</div>
+  <h1>MPU6050 桥接模式驱动设计文档</h1>
+  <p class="standfirst">与 AHT21 驱动同一套桥接分层与契约风格，为 <b>STM32F411CEU6 + FreeRTOS</b> 平台实现基于<b>标准外设库（SPL）硬件 I2C</b> 的六轴传感器驱动：WHO_AM_I 先验、十步初始化、14 字节突发读、互斥锁保护、错误自动恢复。</p>
+  <div class="chips">
+    <span class="chip">平台：<b>F411CEU6 · Cortex-M4F</b></span>
+    <span class="chip">总线：<b>硬件 I2C1 · PB6/PB7 · 400kHz</b></span>
+    <span class="chip">器件：<b>GY-521 · AD0=GND · 0x68</b></span>
+    <span class="chip">库：<b>SPL 标准外设库（非 HAL）</b></span>
+    <span class="chip">编译：<b class="b-ok" style="padding:1px 8px;border-radius:2px;background:#e7efe6;">0 error · 0 warning</b></span>
+  </div>
+</header>
+
+<section id="s1">
+  <div class="sh"><span class="secno">§1</span><h2>架构总览</h2></div>
+  <p class="ssub">桥接模式两根轴：抽象轴（Handler 编排逻辑）与实现轴（驱动协议 + 总线引擎），通过 instantiate 时挂载的函数指针 ops 表解耦。</p>
+  <figure>
+    <img src="assets/driver_flow.png" alt="MPU6050 桥接驱动分层架构与数据流图">
+    <figcaption>图 1 · 五层架构与一次采样的完整数据流（含 RTOS 交互点 / 故障恢复点 / 硬件落点）</figcaption>
+  </figure>
+
+  <h3>与 AHT21 驱动的一致性对照</h3>
+  <table class="rt">
+    <tr><th>维度</th><th>AHT21（现有）</th><th>MPU6050（本驱动）</th><th>判定</th></tr>
+    <tr><td>驱动实例</td><td>bsp_aht21_driver_t + pf_* ops 表</td><td>bsp_mpu6050_driver_t + 同名 ops（增 pf_read_raw / pf_reset）</td><td><span class="badge b-ok">同构</span></td></tr>
+    <tr><td>总线契约</td><td>iic_driver_interface_t（iic_bus_t* 第一参数）</td><td>同一契约头，iic_bus_t 扩展硬件外设字段</td><td><span class="badge b-ok">同一套</span></td></tr>
+    <tr><td>Handler 线程</td><td>temp_humi_handler_thread（队列+lifetime+回调）</td><td>imu_handler_thread（同构）</td><td><span class="badge b-ok">同构</span></td></tr>
+    <tr><td>错误码</td><td>aht21_status_t</td><td>mpu6050_status_t（同名风格 + ERRORBUS/BAD_ID）</td><td><span class="badge b-ok">一致</span></td></tr>
+    <tr><td>Handler 耦合</td><td>直接持有具体驱动类型（§6.5 债务）</td><td>imu_ops_t + void* dev，具名适配函数</td><td><span class="badge b-wa">修复债务</span></td></tr>
+    <tr><td>总线引擎</td><td>软件位带 I2C（PB13/14）</td><td>硬件 I2C 外设（I2C1）</td><td><span class="badge b-ok">实现轴替换</span></td></tr>
+  </table>
+</section>
+
+<section id="s2">
+  <div class="sh"><span class="secno">§2</span><h2>桥接接口定义</h2></div>
+  <p class="ssub">驱动层唯一认账的"实现"契约。返回约定：0 = 失败，非 0 = 成功（对齐软件 I2C 的 IICWaitAck 语义）。</p>
+  <table class="rt">
+    <tr><th>槽位</th><th>签名</th><th>硬件引擎实现语义</th></tr>
+    <tr><td>pf_iic_init / deinit</td><td>int32_t (iic_bus_t*)</td><td>时钟+AF 引脚+外设复位+I2C_Init(400k)+Cmd</td></tr>
+    <tr><td>pf_iic_start</td><td>int32_t (iic_bus_t*)</td><td>GenerateSTART → 等 SB（BUSY 前置检查）</td></tr>
+    <tr><td>pf_iic_stop</td><td>int32_t (iic_bus_t*)</td><td>GenerateSTOP → 等 BUSY 清零 → 恢复 ACK</td></tr>
+    <tr><td>pf_iic_send_byte</td><td>int32_t (iic_bus_t*, u8)</td><td>SendData → 等 TXE</td></tr>
+    <tr><td>pf_iic_receive_byte</td><td>int32_t (iic_bus_t*, u8*)</td><td>等 RXNE → ReceiveData</td></tr>
+    <tr><td>pf_iic_wait_ack</td><td>int32_t (iic_bus_t*)</td><td>轮询 AF→NACK(0)；ADDR→读 SR1+SR2 清除→1；TXE→1；超时→0</td></tr>
+    <tr><td>pf_iic_send_ack / not_ack</td><td>int32_t (iic_bus_t*)</td><td>AcknowledgeConfig(ENABLE/DISABLE) 控制下一字节</td></tr>
+    <tr><td>pf_iic_bus_reset</td><td>int32_t (iic_bus_t*)</td><td>外设复位 → 引脚切 GPIO → 9×SCL 脉冲+STOP → 重新 init</td></tr>
+  </table>
+  <div class="note"><b>为什么细粒度原语在硬件外设上成立</b>：地址字节 ACK（ADDR 标志）与数据字节 ACK（TXE/BTF）在 wait_ack 内归一化；ADDR 的清除（读 SR1+SR2）对驱动层透明。读序列 <code>receive(N-1) → send_not_ack → receive(N) → stop</code> 在 400kHz（22.5µs/字节）下调用间隔远小于 1 字节时间，NACK 时序安全。</div>
+</section>
+
+<section id="s3">
+  <div class="sh"><span class="secno">§3</span><h2>硬件 I2C 配置</h2></div>
+  <div class="grid2">
+    <div class="card"><h4>默认方案 A · I2C1</h4>
+      <ul>
+        <li>SCL=<b>PB6</b>，SDA=<b>PB7</b>（AF4，开漏+上拉，High Speed）</li>
+        <li>APB1 42MHz → 400kHz 快速模式，DutyCycle=2</li>
+        <li>GY-521：VCC→3V3 · SCL→PB6 · SDA→PB7 · <b>AD0→GND</b> · INT 悬空</li>
+        <li>与 AHT21 软件总线 PB13/14 <b>互不冲突</b></li>
+      </ul>
+    </div>
+    <div class="card"><h4>备选方案（引脚冲突时）</h4>
+      <ul>
+        <li><b>B · I2C2</b>：PB10(SCL) / PB11(SDA) —— 仅改 iic_bus_mpu6050 一个结构体</li>
+        <li><b>C · I2C3</b>：PA8(SCL) / PC9(SDA) —— 同上</li>
+        <li>引擎时钟/复用映射自动分支，<b>换总线零代码逻辑改动</b></li>
+      </ul>
+    </div>
+  </div>
+  <h3>SPL 初始化序列（hw_iic_init 内部执行）</h3>
+<pre><code>RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);   /* 引脚端口 */
+RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);    /* 外设      */
+/* GPIO: AF4 + Open-Drain + Pull-Up + High Speed */
+GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);
+GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_I2C1);
+RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, ENABLE);    /* 外设软复位 */
+RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, DISABLE);
+I2C_InitTypeDef i = { .I2C_ClockSpeed = 400000, .I2C_Mode = I2C_Mode_I2C,
+    .I2C_DutyCycle = I2C_DutyCycle_2, .I2C_OwnAddress1 = 0x00,
+    .I2C_Ack = I2C_Ack_Enable, .I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit };
+I2C_Init(I2C1, &amp;i);  I2C_Cmd(I2C1, ENABLE);
+I2C_AcknowledgeConfig(I2C1, ENABLE);</code></pre>
+  <div class="note warn"><b>约束声明</b>：全程使用 SPL（StdPeriph）函数，<b>不使用 HAL、不依赖 CubeMX 生成代码</b>。CubeMX 仅可作引脚冲突人工核对工具（PB6→I2C1_SCL、PB7→I2C1_SDA，检查绿色冲突标记后<b>不要</b>生成代码进 SPL 工程）。</div>
+</section>
+
+<section id="s4">
+  <div class="sh"><span class="secno">§4</span><h2>初始化序列（逐条寄存器说明）</h2></div>
+  <p class="ssub">实现于 mpu6050_init_impl()。默认 ±2g / ±250°/s / DLPF 44Hz / Fs=100Hz。寄存器依据：RM-MPU-6000A v4.2。</p>
+  <table class="rt">
+    <tr><th style="width:38px;">#</th><th>操作</th><th>寄存器(地址)</th><th style="width:70px;">写入值</th><th>理由</th></tr>
+    <tr><td>1</td><td>上电稳定等待</td><td>—</td><td>100ms</td><td>OSAL 任务态延时（非忙等，规避 AHT21 的 TIM2 忙等债务）</td></tr>
+    <tr><td>2</td><td><b>读 WHO_AM_I</b></td><td>0x75（读）</td><td>期望 0x68</td><td>链路连通 + 器件在位双重验证；≠0x68 → <b>MPU6050_STATUS_BAD_ID</b>，终止</td></tr>
+    <tr><td>3</td><td>器件复位</td><td>PWR_MGMT_1 (0x6B)</td><td>0x80</td><td>DEVICE_RESET=1，寄存器恢复默认；位硬件自动清零</td></tr>
+    <tr><td>4</td><td>复位后稳定</td><td>—</td><td>100ms</td><td>数据手册恢复时间</td></tr>
+    <tr><td>5</td><td>信号路径复位</td><td>SIGNAL_PATH_RESET (0x68)</td><td>0x07</td><td>清加速度/陀螺/温度数字路径</td></tr>
+    <tr><td>6</td><td>唤醒 + 选时钟</td><td>PWR_MGMT_1 (0x6B)</td><td>0x01</td><td>SLEEP=0；CLKSEL=001 → X 轴陀螺 PLL（温漂优于内部 RC）</td></tr>
+    <tr><td>7</td><td>PLL 锁定等待</td><td>—</td><td>30ms</td><td>唤醒裕量</td></tr>
+    <tr><td>8</td><td>DLPF 低通</td><td>CONFIG (0x1A)</td><td>0x03</td><td>DLPF_CFG=3 → 陀螺 44Hz / 加速度 44Hz，噪声与响应折中</td></tr>
+    <tr><td>9</td><td>采样率分频</td><td>SMPLRT_DIV (0x19)</td><td>0x09</td><td>Fs = 1kHz/(1+9) = 100Hz，匹配 100ms 采样周期</td></tr>
+    <tr><td>10</td><td>陀螺量程</td><td>GYRO_CONFIG (0x1B)</td><td>0x00</td><td>FS_SEL=0 → ±250°/s（131 LSB/°/s）</td></tr>
+    <tr><td>11</td><td>加速度量程</td><td>ACCEL_CONFIG (0x1C)</td><td>0x00</td><td>AFS_SEL=0 → ±2g（16384 LSB/g）</td></tr>
+  </table>
+</section>
+
+<section id="s5">
+  <div class="sh"><span class="secno">§5</span><h2>六轴数据读取与换算</h2></div>
+  <pre><code>主写:  S  0xD0  0x3B        → 重复起始 Sr
+主读:  0xD1  [ax_H ax_L ay_H ay_L az_H az_L t_H t_L gx_H gx_L gy_H gy_L gz_H gz_L] NACK P</code></pre>
+  <div class="grid2">
+    <div class="card"><h4>换算公式（mpu6050_raw_to_phy）</h4>
+      <ul>
+        <li>加速度(g) = raw ÷ <b>16384</b>（±2g 档）</li>
+        <li>角速度(°/s) = raw ÷ <b>131</b>（±250 档）</li>
+        <li>温度(℃) = raw ÷ <b>340</b> + <b>36.53</b></li>
+        <li>±4/8/16g → 8192/4096/2048；±500/1000/2000 → 65.5/32.8/16.4</li>
+      </ul>
+    </div>
+    <div class="card"><h4>静止放置判据（台账 V2–V4）</h4>
+      <ul>
+        <li>重力轴 ≈ <b>±1.00g</b>（±0.05g 静差内）</li>
+        <li>水平两轴 |g| ≤ 0.02</li>
+        <li>陀螺三轴 |dps| ≤ 1.5（上电初期 2.0）</li>
+        <li>温度 = 环境 +3~5℃（芯片自热，非故障）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="s6">
+  <div class="sh"><span class="secno">§6</span><h2>错误处理与恢复</h2></div>
+  <table class="rt">
+    <tr><th>错误码</th><th>触发</th><th>处置</th></tr>
+    <tr><td>OK=0</td><td>成功</td><td>—</td></tr>
+    <tr><td>PARAM</td><td>NULL/非法参数</td><td>检查实例化与入参</td></tr>
+    <tr><td>NOT_INIT</td><td>未初始化先读</td><td>先走 instantiate</td></tr>
+    <tr><td>ERRORTIMEOUT</td><td>SB/RXNE/BUSY 等待耗尽（≤2-3ms）</td><td>重试×2 → 总线复位</td></tr>
+    <tr><td>ERRORBUS</td><td>地址/数据 NACK（AF 即时清除）</td><td>重试×2 → 总线复位；查接线/AD0</td></tr>
+    <tr><td>BAD_ID</td><td>WHO_AM_I ≠ 0x68</td><td>断电查模块/AD0/接线（0x98=9250、0x70=6500，见 FAQ）</td></tr>
+  </table>
+  <p style="font-size:13.5px;margin-top:10px;"><b>保证</b>：任何读操作必返回（等待均有上限），不会忙等阻塞调度器；任务最长持锁 ≈ 重试总耗时（约 15ms）。互斥锁为 FreeRTOS 互斥量（优先级继承），锁等待超时 50ms；连续失败由 Handler 自动执行 <code>hw_iic_bus_reset → pf_reset → 重 init</code> 自愈。</p>
+</section>
+
+<section id="s7">
+  <div class="sh"><span class="secno">§7</span><h2>FreeRTOS 集成与移植步骤</h2></div>
+  <div class="grid2">
+    <div class="card"><h4>任务与同步</h4>
+      <ul>
+        <li>生产者 prio1/栈256：100ms 投事件，不碰 I2C</li>
+        <li>消费者 prio3/栈512：queue_get 阻塞 + lifetime(≥) 节流</li>
+        <li>队列深 10；失败不刷新 last_tick，下事件即重试</li>
+        <li>互斥锁整事务保护（优先级继承，50ms 超时）</li>
+        <li>AHT21 迁入同总线时：共用同一把锁实例即可</li>
+      </ul>
+    </div>
+    <div class="card"><h4>十步移植（约 15 分钟）</h4>
+      <ol style="padding-left:18px;">
+        <li>拷贝 Core/Src（iic_interface.h, hw_iic.*）+ BSP/MPU6050/ + OSAL 契约头 + 集成示例</li>
+        <li>3 个 .c 加入工程编译，include 路径加 BSP/MPU6050</li>
+        <li>OSAL 合并：有现成 osal_freertos.c 则删示例内置包装段</li>
+        <li>（可选）定义 MPU6050_USE_ELOG 接 EasyLogger</li>
+        <li>接线 3V3/GND/PB6/PB7/AD0→GND</li>
+        <li>main() 调 mpu6050_app_task_create()</li>
+        <li>上电看 [IMU] 输出；异常按错误码表定位</li>
+        <li>按测试台账 V1–V6 回填数据</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="s8">
+  <div class="sh"><span class="secno">§8</span><h2>编译验证与 FAQ</h2></div>
+  <p><b>静态审查证据</b>（真实交叉编译器 arm-none-eabi-gcc 14.3.1，<code>-mcpu=cortex-m4 -mthumb -std=c99 -Wall -Wextra -fsyntax-only</code>，SPL/FreeRTOS 签名一致桩头）：</p>
+<pre><code>Core/Src/hw_iic.c                    [rc=0]  0 警告
+BSP/MPU6050/bsp_mpu6050_driver.c     [rc=0]  0 警告
+BSP/MPU6050/bsp_mpu6050_handler.c    [rc=0]  0 警告
+integration/mpu6050_app_example.c    [rc=0]  0 警告</code></pre>
+  <p class="sm">完整链接在用户工程完成（本环境无启动文件与完整 SPL/FreeRTOS 源码树）；桩头仅替换寄存器地址常量，API 签名与真实库一致。</p>
+  <table class="rt">
+    <tr><th style="width:190px;">FAQ</th><th>要点</th></tr>
+    <tr><td>WHO_AM_I = 0x00/0xFF？</td><td>接线/上拉/供电问题；0x00 常为 SDA 卡死（驱动会自动走 bus_reset）</td></tr>
+    <tr><td>WHO_AM_I = 0x98 / 0x70？</td><td>模块实为 MPU9250(0x98)/MPU6500(0x70)；六轴协议基本兼容，改 WHO_AM_I 值与温度系数（6500: raw/333.87+21）即可，务必记入台账</td></tr>
+    <tr><td>想改 200Hz？</td><td>生产者延时 5ms + smplrt_div=4 + lifetime_ms=5</td></tr>
+    <tr><td>要姿态角？</td><td>本次仅原始六轴（范围声明）；融合算法基于 pf_read_data 的 g/°/s 另行设计</td></tr>
+  </table>
+</section>
+
+<footer>
+  <span>AutoClaw · 2026-08-28 · 配套源码 4 模块 7 文件 · 实测数据回填 docs/MPU6050_测试台账.md</span>
+  <span>Fathom Information Design 风格</span>
+</footer>
+
+</div>
+</body>
+</html>

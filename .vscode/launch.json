@@ -6,11 +6,12 @@
             "type": "cortex-debug",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "executable": "${command:cmake.launchTargetPath}",
+            "executable": "${workspaceFolder}/build/Debug/watch_app.elf",
             "servertype": "jlink",
             "device": "STM32F411CE",
             "interface": "swd",
-            "runToMain": true,
+            "serverArgs": ["-speed", "400"],
+            "runToEntryPoint": "main",
             "showDevDebugOutput": "parsed",
             "preLaunchTask": "build",
             "svdFile": "/opt/ST/STM32CubeCLT_1.21.0/STMicroelectronics_CMSIS_SVD/STM32F411.svd"
@@ -20,7 +21,7 @@
             "type": "cortex-debug",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "executable": "${command:cmake.launchTargetPath}",
+            "executable": "${workspaceFolder}/build/Debug/watch_app.elf",
             "servertype": "openocd",
             "serverpath": "/opt/homebrew/bin/openocd",
             "configFiles": [
@@ -28,7 +29,7 @@
             ],
             "device": "STM32F411CE",
             "interface": "swd",
-            "runToMain": true,
+            "runToEntryPoint": "main",
             "showDevDebugOutput": "parsed",
             "preLaunchTask": "build",
             "svdFile": "/opt/ST/STM32CubeCLT_1.21.0/STMicroelectronics_CMSIS_SVD/STM32F411.svd"

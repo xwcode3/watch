@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+:root{--paper:#f5f5f2;--ink:#1b222b;--navy:#16324f;--deep:#0d2438;--steel:#47637f;--muted:#75808c;--hair:#d9dee4;--accent:#c05a31;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{width:1600px;height:900px;background:var(--paper);font-family:-apple-system,"Helvetica Neue","PingFang SC","Noto Sans SC",sans-serif;color:var(--ink);overflow:hidden;}
+.wrap{padding:34px 44px;}
+.kick{font-size:13px;letter-spacing:.3em;color:var(--accent);font-weight:800;}
+h1{font-size:30px;color:var(--deep);margin:6px 0 2px;font-weight:800;}
+.sub{font-size:14px;color:var(--muted);margin-bottom:22px;}
+.lane{background:#fff;border:1px solid var(--hair);border-radius:6px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;}
+.lane .tag{flex:none;width:150px;}
+.lane .tag b{display:block;font-size:15px;color:var(--deep);}
+.lane .tag span{font-size:11px;color:var(--muted);}
+.boxes{display:flex;gap:12px;flex:1;}
+.box{background:#eef1f5;border:1px solid #cfd8e1;border-radius:4px;padding:9px 12px;font-size:13px;line-height:1.5;color:#2c3a48;}
+.box b{font-size:13.5px;color:var(--navy);display:block;}
+.box.hl{background:#dbe5ee;border-color:#9db1c4;}
+.box.navy{background:var(--navy);border-color:var(--navy);color:#dce6ef;}
+.box.navy b{color:#fff;}
+.box.acc{background:#fff;border:2px solid var(--accent);}
+.box.acc b{color:var(--accent);}
+.arrowcol{flex:none;display:flex;flex-direction:column;justify-content:center;color:var(--navy);font-weight:800;font-size:18px;}
+.foot{margin-top:10px;display:flex;gap:26px;font-size:12px;color:var(--muted);}
+.foot b{color:var(--ink);}
+.dots{display:flex;gap:8px;align-items:center;}
+.dot{width:9px;height:9px;border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">MPU6050 BRIDGE DRIVER · ARCHITECTURE &amp; DATA FLOW</div>
+  <h1>MPU6050 桥接模式驱动 — 分层架构与一次采样的数据流</h1>
+  <div class="sub">STM32F411CEU6 · FreeRTOS · 标准外设库硬件 I2C1 (PB6/PB7, 400kHz) · 器件地址 0x68 · 2026-08-28</div>
+
+  <div class="lane">
+    <div class="tag"><b>集成层 App</b><span>mpu6050_app_example.c</span></div>
+    <div class="boxes">
+      <div class="box"><b>iic_bus_mpu6050</b>总线描述{I2C1, PB6/PB7, 400kHz}</div>
+      <div class="box"><b>hw_iic_mount_interface()</b>一行挂载硬件引擎</div>
+      <div class="box"><b>imu_input_arg</b>OSAL·回调·重试注入</div>
+      <div class="box navy"><b>mpu6050_app_task_create()</b>生产者 prio1 + 消费者 prio3</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="tag"><b>任务层</b><span>生产者 → 队列 → 消费者</span></div>
+    <div class="boxes">
+      <div class="box"><b>send_imu_event</b>每 100ms 投递事件（不碰 I2C）</div>
+      <div class="arrowcol">→</div>
+      <div class="box hl"><b>FreeRTOS 队列</b>深度 10 · 事件{type,lifetime,callback}</div>
+      <div class="arrowcol">→</div>
+      <div class="box"><b>imu_handler_thread</b>queue_get 阻塞 · lifetime≥ 节流 · 失败不刷新时间戳</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="tag"><b>Handler 层</b><span>bsp_mpu6050_handler.c</span></div>
+    <div class="boxes">
+      <div class="box hl"><b>mutex_lock (50ms 超时)</b>整条 I2C 事务加锁 · 优先级继承</div>
+      <div class="box"><b>ops.pf_read_data</b>重试×2 · 退避 5ms</div>
+      <div class="box acc"><b>失败恢复</b>hw_iic_bus_reset + pf_reset + 重 init</div>
+      <div class="box"><b>callback(data)</b>默认打印 / 用户消费</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="tag"><b>Driver 层</b><span>bsp_mpu6050_driver.c · 纯器件协议</span></div>
+    <div class="boxes">
+      <div class="box"><b>WHO_AM_I (0x75)</b>必须 0x68，否则 BAD_ID</div>
+      <div class="box"><b>初始化 10 步</b>复位→路径复位→唤醒+PLL→DLPF3→DIV9→量程</div>
+      <div class="box hl"><b>突发读 14 字节</b>S 0xD0 0x3B Sr 0xD1 …NACK P</div>
+      <div class="box"><b>mpu6050_raw_to_phy</b>÷16384 g · ÷131 dps · raw/340+36.53℃</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="tag"><b>引擎层</b><span>hw_iic.c（SPL，非 HAL）</span></div>
+    <div class="boxes">
+      <div class="box"><b>start/send/recv</b>GenerateSTART 等 SB · 等 TXE/RXNE（带超时）</div>
+      <div class="box"><b>wait_ack</b>轮询 ADDR/TXE/AF → ACK/NACK 归一化</div>
+      <div class="box"><b>bus_reset</b>外设复位 + 9×SCL 手动脉冲 + STOP + 重 init</div>
+      <div class="box navy"><b>I2C1 外设</b>SPL 寄存器操作 · 每步 ≤2-3ms 上限</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="dots"><span class="dot" style="background:#dbe5ee;"></span>RTOS 交互点</span>
+    <span class="dots"><span class="dot" style="background:#fff;border:2px solid var(--accent);"></span>故障恢复点</span>
+    <span class="dots"><span class="dot" style="background:var(--navy);"></span>硬件落点</span>
+    <span><b>桥接两轴可独立替换</b>：换器件=只改 driver 层；换总线=只改引擎函数指针表；Handler 零改动</span>
+  </div>
+</div>
+</body>
+</html>

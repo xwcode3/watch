@@ -6,7 +6,7 @@ set(MX_Defines_Syms
 	# Removed USE_HAL_DRIVER, added USE_STDPERIPH_DRIVER
 	USE_STDPERIPH_DRIVER
 	STM32F411xE
-    $<$<CONFIG:Debug>:DEBUG>
+    # $<$<CONFIG:Debug>:DEBUG>
 )
 
 # STM32CubeMX generated include paths - modified for StdPeriph
@@ -21,6 +21,7 @@ set(MX_Include_Dirs
 	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LCD
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/KEY
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/MPU6050
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/ADC
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/W25Q64
@@ -72,7 +73,9 @@ set(MX_Application_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/LED/bsp_led_handler.c
-	# ${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/MPU6050/
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/MPU6050/bsp_circular_buffer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/MPU6050/bsp_mpu6050_driver.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/MPU6050/bsp_mpu6050_handler.c
 	#${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/SPEAKER/bsp_speaker_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/bsp_usart_driver.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../BSP/USART/mid_circular_buffer.c
@@ -139,6 +142,7 @@ set(STD_PERIPH_Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_pwr.c
 	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.c
 )
 
 # FreeRTOS source files

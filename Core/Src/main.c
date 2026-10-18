@@ -64,23 +64,6 @@ int main(void) {
 
     timer_2_init();
 
-    // iic_bus_t iic_bus_aht21_1 = {
-    //     .IIC_SCL_PIN = GPIO_Pin_14,
-    //     .IIC_SCL_PORT = GPIOB,
-    //     .IIC_SDA_PIN = GPIO_Pin_13,
-    //     .IIC_SDA_PORT = GPIOB,
-    // };
-
-    // aht21_hw_test();
-    // if (aht21_test2(iic_bus_aht21_1) == 0) {
-    //   printf("AHT21 is OK!\r\n");
-    // } else {
-    //   printf("AHT21 is error!\r\n");
-    // }
-    // while (1) {
-
-    // }
-
     app_check();
 
     /* Add your application code here */
@@ -209,7 +192,7 @@ void SystemClock_Config2(void) {
 
 // 获取当前系统时钟频率
 void get_clock_info(void) {
-  printf("================== APP =====================\r\n");
+  printf("================== new APP =====================\r\n");
   RCC_ClocksTypeDef RccClocks;
   RCC_GetClocksFreq(&RccClocks);
 
